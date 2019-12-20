@@ -34,11 +34,12 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 gem 'activesupport'
 gem 'figaro'
 gem 'hashie'
+gem 'json_api_client'
 gem 'jwt'
 gem 'rake'
 gem 'puma'
 gem 'sinatra'
-gem 'sinja'
+gem 'sinja', '> 1.0.0'
 
 group :development, :test do
   group :pry do
