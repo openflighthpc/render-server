@@ -46,7 +46,9 @@ task :require_bundler do
 end
 
 task require: :require_bundler do
-  # require 'config/initializers/figaro'
+  require 'config/initializers/figaro'
+  require 'config/initializers/logger'
+  require 'app/records'
   # require 'app/models'
   # require 'app/token'
   # require 'app/serializers'
@@ -65,4 +67,66 @@ end
 # task 'token:user' => :require do
 #   puts Token.new.generate_jwt
 # end
+
+# Creates the demo cluster used by the spec
+task :'setup:demo-cluster' => :require do
+  cluster = ClusterRecord.create(
+    name: 'demo-cluster',
+    level_params: {
+      platform: 'demo',
+      key: 'cluster',
+      cluster: 'demo-cluster'
+    }
+  )
+
+  nodes = (1..10).map do |idx|
+    name = "node#{idx}"
+    NodeRecord.create(
+      name: name,
+      level_params: {
+        key: name,
+        ip: "10.10.0.#{idx}"
+      },
+      relationships: { cluster: cluster }
+    )
+  end
+
+  # NOTE: The odds/evens only look reversed because node01 is at index 0
+  evens = nodes.each_with_index.reject { |_, i| i.even? }.map { |n, _| n }
+  odds = nodes.each_with_index.select { |_, i| i.even? }.map { |n, _| n }
+
+  GroupRecord.create(
+    name: 'even',
+    level_params: {
+      key: 'even',
+      even: true
+    },
+    relationships: { cluster: cluster, nodes: evens }
+  )
+
+  GroupRecord.create(
+    name: 'odd',
+    level_params: {
+      key: 'odd',
+      even: false
+    },
+    relationships: { cluster: cluster, nodes: odds }
+  )
+
+  GroupRecord.create(
+    name: 'subnet',
+    level_params: {
+      key: 'subnet',
+      subnet: '10.10.0.0/24'
+    },
+    relationships: { cluster: cluster, nodes: nodes }
+  )
+end
+
+task :'drop:demo-cluster' => :require do
+  cluster = ClusterRecord.includes(:nodes, :groups).find('.demo-cluster').first
+  cluster.nodes.each(&:destroy)
+  cluster.groups.each(&:destroy)
+  cluster.destroy
+end
 

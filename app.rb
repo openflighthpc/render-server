@@ -27,6 +27,7 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
+require 'sinja'
 require 'sinja/method_override'
 require 'hashie'
 

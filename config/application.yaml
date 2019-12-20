@@ -37,4 +37,5 @@ development:
   log_level:  debug
 
 test:
+  remote_url: http://localhost:6301
   log_level: error
