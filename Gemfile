@@ -52,4 +52,5 @@ group :test do
   gem 'rspec'
   gem 'rspec-collection_matchers'
   gem 'factory_bot'
+  gem 'vcr'
 end

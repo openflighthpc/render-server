@@ -27,42 +27,27 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-task :require_bundler do
-  $: << __dir__
-  $: << File.join(__dir__, 'lib')
-  ENV['BUNDLE_GEMFILE'] ||= File.join(__dir__, 'Gemfile')
+# Loads the configurations into the environment
+Figaro.application = Figaro::Application.new(
+  environment: (ENV['RACK_ENV'] || 'development').to_sym,
+  path: File.expand_path('../application.yaml', __dir__)
+)
+Figaro.load
+      .reject { |_, v| v.nil? }
+      .each { |key, value| ENV[key] ||= value }
 
-  require 'rubygems'
-  require 'bundler'
+# Hard sets the app's root directory to the current code base
+ENV['app_root_dir'] = File.expand_path('../..', __dir__)
+root_dir = ENV['app_root_dir']
 
-  raise <<~ERROR.chomp unless ENV['RACK_ENV']
-    Can not require the application because the RACK_ENV has not been set.
-    Please export the env to your environment and try again:
+relative_keys = []
+Figaro.require_keys(*[*relative_keys].tap do |keys|
+                        if ENV['remote_url']
+                          # keys << 'remote_jwt' << 'remote_cluster'
+                        end
+                      end)
 
-    export RACK_ENV=production
-  ERROR
-
-  Bundler.require(:default, ENV['RACK_ENV'].to_sym)
-end
-
-task require: :require_bundler do
-  # require 'config/initializers/figaro'
-  # require 'app/models'
-  # require 'app/token'
-  # require 'app/serializers'
-  require 'app'
-end
-
-task console: :require do
-  Bundler.require(:pry)
-  binding.pry
-end
-
-# task 'token:admin' => :require do
-#   puts Token.new(admin: true).generate_jwt
-# end
-
-# task 'token:user' => :require do
-#   puts Token.new.generate_jwt
-# end
+# Sets relative keys from the install directory
+# NOTE: Does not affect the path if it is already absolute
+relative_keys.each { |k| ENV[k] = File.absolute_path(ENV[k], root_dir) }
 

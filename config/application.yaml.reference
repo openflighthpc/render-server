@@ -1,0 +1,71 @@
+# =============================================================================
+# Reference Documentation
+# This document contains the key descriptions for:
+# config/application.yaml
+#
+# This application is configured using `Figaro`. Refer to the documentation
+# for further details:
+# https://github.com/laserlemon/figaro
+#
+# This document is for reference purposes only, setting values here will not
+# configure the application.
+# =============================================================================
+
+# =============================================================================
+# JSON Web Token Shared Secret
+# Specify the shared secret used to generate and verify jwt_tokens. This value
+# should be kept private as anyone with access to it can generate fraudulent
+# credentials. Consider setting it in the environment instead of the
+# application's config file.
+# =============================================================================
+jwt_shared_secret:
+
+# =============================================================================
+# Topology Config
+# Specify the path to the topology configuration file. By default it will look
+# within the 'config' directory. Refer to `config/topology.example.yaml` for
+# details on how to configure this file
+#
+# Both absolute and relative paths are supported by this config value. Relative
+# paths are from the install directory
+# =============================================================================
+topology_config:
+
+# =============================================================================
+# Remote NodeattrServer [OPTIONAL]
+# Configure the server with an upstream OpenFlightHPC/NodeattrServer. The
+# upstream URL is given by `remote_url`. To prevent conflicts with the
+# topology, this option can not be used with `static_nodes`.
+#
+# The JWT access token should be given as `remote_jwt`. This token may be
+# signed by a different shared secret to this application. For security reasons
+# consider exporting the `remote_jwt` into the environment instead of hard
+# coding it.
+#
+# The remote_cluster must specify the default cluster the nodes belong to
+# =============================================================================
+remote_url:
+remote_jwt:
+remote_cluster:
+
+# =============================================================================
+# Scripts Directory
+# Specify the working directory for the commands. This is to allow the commands
+# to call other scripts easily
+# =============================================================================
+scripts_dir:
+
+# =============================================================================
+# Number of Worker Commands
+# Specify the number of commands that will be ran in parallel. This is to
+# prevent network timeouts due to a large number of requests being made
+# simultaneously.
+# =============================================================================
+num_worker_commands:
+
+# =============================================================================
+# Log Level
+# Specify which level of logging should be used. The supported values are:
+# fatal, error, warn, info, or debug
+# =============================================================================
+log_level:
