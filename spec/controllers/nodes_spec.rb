@@ -27,31 +27,13 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-source "https://rubygems.org"
+require 'spec_helper'
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
-
-gem 'activesupport'
-gem 'figaro'
-gem 'hashie'
-gem 'json_api_client'
-gem 'jwt'
-gem 'rake'
-gem 'puma'
-gem 'sinatra'
-gem 'sinja', '> 1.0.0'
-
-group :development, :test do
-  group :pry do
-    gem 'pry'
-    gem 'pry-byebug'
+RSpec.describe '/nodes' do
+  describe 'Index#GET' do
+    it do
+      ClusterRecord.find('.demo-cluster')
+    end
   end
 end
 
-group :test do
-  gem 'rack-test'
-  gem 'rspec'
-  gem 'rspec-collection_matchers'
-  gem 'webmock'
-  gem 'vcr'
-end

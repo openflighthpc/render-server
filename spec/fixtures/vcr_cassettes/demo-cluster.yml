@@ -1,0 +1,77 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://localhost:6301/clusters/.demo-cluster
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '1013'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "data": {
+            "type": "clusters",
+            "id": "5dfcda11e1382365ad3cd886",
+            "attributes": {
+              "name": "demo-cluster",
+              "params": {
+                "platform": "demo",
+                "key": "cluster",
+                "cluster": "demo-cluster"
+              }
+            },
+            "links": {
+              "self": "/clusters/5dfcda11e1382365ad3cd886"
+            },
+            "relationships": {
+              "nodes": {
+                "links": {
+                  "self": "/clusters/5dfcda11e1382365ad3cd886/relationships/nodes",
+                  "related": "/clusters/5dfcda11e1382365ad3cd886/nodes"
+                }
+              },
+              "groups": {
+                "links": {
+                  "self": "/clusters/5dfcda11e1382365ad3cd886/relationships/groups",
+                  "related": "/clusters/5dfcda11e1382365ad3cd886/groups"
+                }
+              },
+              "cascades": {
+                "links": {
+                  "self": "/clusters/5dfcda11e1382365ad3cd886/relationships/cascades",
+                  "related": "/clusters/5dfcda11e1382365ad3cd886/cascades"
+                }
+              }
+            }
+          },
+          "jsonapi": {
+            "version": "1.0"
+          },
+          "included": [
+
+          ]
+        }
+    http_version: 
+  recorded_at: Fri, 20 Dec 2019 14:52:02 GMT
+recorded_with: VCR 5.0.0

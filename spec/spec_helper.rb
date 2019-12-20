@@ -39,8 +39,11 @@ require 'hashie'
 require 'vcr'
 
 VCR.configure do |config|
-  config.cassette_library_dir = "fixtures/vcr_cassettes"
+  config.cassette_library_dir = 'spec/fixtures/vcr_cassettes'
   config.hook_into :webmock
+  config.filter_sensitive_data('[REDACTED]') do |interaction|
+    interaction.request.headers['Authorization'].first
+  end
 end
 
 module RSpecSinatraMixin
@@ -55,6 +58,12 @@ end
 RSpec.configure do |c|
 	# Include the Sinatra helps into the application
 	c.include RSpecSinatraMixin
+
+  c.around(:all) do |example|
+    VCR.use_cassette('demo-cluster') do
+      example.call
+    end
+  end
 
   def admin_headers
     header 'Content-Type', 'application/vnd.api+json'
