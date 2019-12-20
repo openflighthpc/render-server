@@ -69,13 +69,15 @@ end
 # end
 
 # Creates the demo cluster used by the spec
-task :'setup:demo-cluster' => :require do
+task :'cluster:setup' => :require do
+  raise 'Can not setup cluster in production' if Figaro.env.RACK_ENV == 'production'
+
   cluster = ClusterRecord.create(
-    name: 'demo-cluster',
+    name: Figaro.env.remote_cluster,
     level_params: {
       platform: 'demo',
       key: 'cluster',
-      cluster: 'demo-cluster'
+      cluster: Figaro.env.remote_cluster
     }
   )
 
@@ -123,8 +125,12 @@ task :'setup:demo-cluster' => :require do
   )
 end
 
-task :'drop:demo-cluster' => :require do
-  cluster = ClusterRecord.includes(:nodes, :groups).find('.demo-cluster').first
+task :'cluster:drop' => :require do
+  raise 'Can not drop cluster in production' if Figaro.env.RACK_ENV == 'production'
+
+  cluster = ClusterRecord.includes(:nodes, :groups)
+                         .find(".#{Figaro.env.remote_cluster}")
+                         .first
   cluster.nodes.each(&:destroy)
   cluster.groups.each(&:destroy)
   cluster.destroy

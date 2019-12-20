@@ -59,8 +59,8 @@ RSpec.configure do |c|
 	# Include the Sinatra helps into the application
 	c.include RSpecSinatraMixin
 
-  c.around(:all) do |example|
-    VCR.use_cassette('demo-cluster') do
+  c.around(:each) do |example|
+    VCR.use_cassette(Figaro.env.remote_cluster) do
       example.call
     end
   end
