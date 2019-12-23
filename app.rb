@@ -124,10 +124,16 @@ end
 
 resource :clusters, pkre: /default/ do
   helpers do
+    def default_cluster
+      ClusterRecord.find(".#{Figaro.env.remote_cluster}").first
+    end
+
     def find(_)
-      ClusterRecord.find(".#{Figaro.env.remote_cluster}")
+      default_cluster
     end
   end
+
+  index { [default_cluster] }
 
   show
 end
