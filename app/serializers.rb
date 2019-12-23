@@ -27,16 +27,16 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-require 'spec_helper'
+class NodeRecordSerializer
+  include JSONAPI::Serializer
 
-RSpec.describe '/nodes' do
-  describe 'Index#GET' do
-    it 'can proxy requests to nodeattr-server' do
-      admin_headers
-      get '/nodes'
-      nodes = parse_last_response_body.data.map(&:id)
-      expect(nodes).to contain_exactly(*DemoCluster.new.nodes.map(&:name))
-    end
+  def id
+    object.name
   end
-end
 
+  def type
+    'nodes'
+  end
+
+  attributes :name
+end

@@ -51,7 +51,7 @@ task require: :require_bundler do
   require 'app/records'
   # require 'app/models'
   # require 'app/token'
-  # require 'app/serializers'
+  require 'app/serializers'
   require 'app'
 end
 

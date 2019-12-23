@@ -38,6 +38,8 @@ require 'json'
 require 'hashie'
 require 'vcr'
 
+require 'fixtures/demo_cluster'
+
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/fixtures/vcr_cassettes'
   config.hook_into :webmock
@@ -68,13 +70,13 @@ RSpec.configure do |c|
   def admin_headers
     header 'Content-Type', 'application/vnd.api+json'
     header 'Accept', 'application/vnd.api+json'
-    header 'Authorization', "Bearer #{Token.new(admin: true).generate_jwt}"
+    # header 'Authorization', "Bearer #{Token.new(admin: true).generate_jwt}"
   end
 
   def user_headers
     header 'Content-Type', 'application/vnd.api+json'
     header 'Accept', 'application/vnd.api+json'
-    header 'Authorization', "Bearer #{Token.new.generate_jwt}"
+    # header 'Authorization', "Bearer #{Token.new.generate_jwt}"
   end
 
   def parse_last_request_body
@@ -114,5 +116,9 @@ RSpec.configure do |c|
         hash[:id] = fuzzy ? model.fuzzy_id : model.id
       end
     }
+  end
+
+  def cluster_record
+    ClusterRecord.find(".#{Figaro.env.remote_cluster}").first
   end
 end

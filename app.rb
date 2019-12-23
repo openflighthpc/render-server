@@ -98,7 +98,7 @@ resource :nodes, pkre: PKRE_REGEX do
   end
 
   index do
-    raise NotImplementedError
+    NodeRecord.where(cluster_id: ".#{Figaro.env.remote_cluster}").all
   end
 
   show

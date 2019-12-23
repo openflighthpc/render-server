@@ -44,6 +44,8 @@ class Record < JsonApiClient::Resource
 end
 
 class NodeRecord < Record
+  belongs_to :cluster, class_name: 'ClusterRecord', shallow_path: true
+
   property :name, type: :string
   property :params, type: :hash
 end
