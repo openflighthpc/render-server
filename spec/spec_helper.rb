@@ -61,8 +61,20 @@ RSpec.configure do |c|
 	# Include the Sinatra helps into the application
 	c.include RSpecSinatraMixin
 
+  # NOTE: *READ ME FUTURE DEVS*
+  # The following line should be commented out *most of the time. This prevents VCR
+  # from making any new requests that it doesn't recognised. In theory, the app should
+  # make the same requests each time.
+  #
+  # * It is acceptable to uncomment the line when adding new specs IF you need to make
+  # a new request. However please comment it out once you are done
+  #
+  # @vcr_record_mode = :new_episodes
+
   c.around(:each) do |example|
-    VCR.use_cassette(Figaro.env.remote_cluster, record: :new_episodes, allow_playback_repeats: true) do
+    VCR.use_cassette(Figaro.env.remote_cluster,
+                     record: @vcr_record_mode || :once,
+                     allow_playback_repeats: true) do
       example.call
     end
   end
