@@ -71,58 +71,13 @@ end
 # Creates the demo cluster used by the spec
 task :'cluster:setup' => :require do
   raise 'Can not setup cluster in production' if Figaro.env.RACK_ENV == 'production'
+  require_relative File.join(__dir__, 'spec/fixtures/demo_cluster.rb')
 
-  cluster = ClusterRecord.create(
-    name: Figaro.env.remote_cluster,
-    level_params: {
-      platform: 'demo',
-      key: 'cluster',
-      cluster: Figaro.env.remote_cluster
-    }
-  )
+  demo = DemoCluster.new
 
-  nodes = (1..10).map do |idx|
-    name = "node#{idx}"
-    NodeRecord.create(
-      name: name,
-      level_params: {
-        key: name,
-        ip: "10.10.0.#{idx}"
-      },
-      relationships: { cluster: cluster }
-    )
-  end
-
-  # NOTE: The odds/evens only look reversed because node01 is at index 0
-  evens = nodes.each_with_index.reject { |_, i| i.even? }.map { |n, _| n }
-  odds = nodes.each_with_index.select { |_, i| i.even? }.map { |n, _| n }
-
-  GroupRecord.create(
-    name: 'even',
-    level_params: {
-      key: 'even',
-      even: true
-    },
-    relationships: { cluster: cluster, nodes: evens }
-  )
-
-  GroupRecord.create(
-    name: 'odd',
-    level_params: {
-      key: 'odd',
-      even: false
-    },
-    relationships: { cluster: cluster, nodes: odds }
-  )
-
-  GroupRecord.create(
-    name: 'subnet',
-    level_params: {
-      key: 'subnet',
-      subnet: '10.10.0.0/24'
-    },
-    relationships: { cluster: cluster, nodes: nodes }
-  )
+  demo.cluster.save
+  demo.nodes.each(&:save)
+  demo.groups.each(&:save)
 end
 
 task :'cluster:drop' => :require do
