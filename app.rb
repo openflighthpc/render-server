@@ -138,3 +138,12 @@ resource :clusters, pkre: /default/ do
   show
 end
 
+resource :templates, pkre: PKRE_REGEX do
+  helpers do
+    def find(id)
+    end
+  end
+
+  show
+end
+

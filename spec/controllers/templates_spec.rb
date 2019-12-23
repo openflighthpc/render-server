@@ -30,5 +30,12 @@
 require 'spec_helper'
 
 RSpec.describe '/templates' do
+  describe 'Show#GET' do
+    it 'returns 404 if the template is missing' do
+      admin_headers
+      get '/templates/missing'
+      expect(last_response).to be_not_found
+    end
+  end
 end
 
