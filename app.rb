@@ -93,7 +93,7 @@ PKRE_REGEX = /(?:[a-zA-Z0-9]+)|(?:[\w-]+\.[\w-]+)/
 resource :nodes, pkre: PKRE_REGEX do
   helpers do
     def find(id)
-      raise NotImplementedError
+      NodeRecord.find("#{Figaro.env.remote_cluster}.#{id}").first
     end
   end
 

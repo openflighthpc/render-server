@@ -62,7 +62,7 @@ RSpec.configure do |c|
 	c.include RSpecSinatraMixin
 
   c.around(:each) do |example|
-    VCR.use_cassette(Figaro.env.remote_cluster) do
+    VCR.use_cassette(Figaro.env.remote_cluster, record: :new_episodes, allow_playback_repeats: true) do
       example.call
     end
   end

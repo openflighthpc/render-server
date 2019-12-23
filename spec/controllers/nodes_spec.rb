@@ -38,5 +38,14 @@ RSpec.describe '/nodes' do
       expect(nodes).to contain_exactly(*DemoCluster.new.nodes.map(&:name))
     end
   end
+
+  describe 'Show#GET' do
+    it 'can proxy requests to nodeattr-server' do
+      node = DemoCluster.new.nodes.first
+      admin_headers
+      get "/nodes/#{node.name}"
+      expect(parse_last_response_body.data.id).to eq(node.name)
+    end
+  end
 end
 
