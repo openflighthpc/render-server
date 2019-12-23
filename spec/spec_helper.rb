@@ -76,7 +76,7 @@ RSpec.configure do |c|
     FakeFS do
       FakeFS::FileSystem.clone(File.join(__dir__, 'fixtures/vcr_cassettes'))
 
-      VCR.use_cassette(Figaro.env.remote_cluster,
+      VCR.use_cassette(Figaro.env.remote_cluster!,
                        record: @vcr_record_mode || :once,
                        allow_playback_repeats: true) do
         example.call
@@ -136,6 +136,6 @@ RSpec.configure do |c|
   end
 
   def cluster_record
-    ClusterRecord.find(".#{Figaro.env.remote_cluster}").first
+    ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
   end
 end

@@ -28,7 +28,7 @@
 #===============================================================================
 
 DEFAULT_LOGGER = Logger.new($stdout).tap do |logger|
-  logger.level = case Figaro.env.log_level.to_s
+  logger.level = case Figaro.env.log_level!.to_s
   when 'fatal'
     Logger::FATAL
   when 'error'

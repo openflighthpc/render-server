@@ -93,14 +93,14 @@ PKRE_REGEX = /[\w-]+/
 resource :nodes, pkre: PKRE_REGEX do
   helpers do
     def find(id)
-      NodeRecord.find("#{Figaro.env.remote_cluster}.#{id}").first
+      NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
     rescue JsonApiClient::Errors::NotFound
       nil
     end
   end
 
   index do
-    NodeRecord.where(cluster_id: ".#{Figaro.env.remote_cluster}").all
+    NodeRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").all
   end
 
   show
@@ -109,14 +109,14 @@ end
 resource :groups, pkre: PKRE_REGEX do
   helpers do
     def find(id)
-      GroupRecord.find("#{Figaro.env.remote_cluster}.#{id}").first
+      GroupRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
     rescue JsonApiClient::Errors::NotFound
       nil
     end
   end
 
   index do
-    GroupRecord.where(cluster_id: ".#{Figaro.env.remote_cluster}").all
+    GroupRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").all
   end
 
   show
@@ -125,7 +125,7 @@ end
 resource :clusters, pkre: /default/ do
   helpers do
     def default_cluster
-      ClusterRecord.find(".#{Figaro.env.remote_cluster}").first
+      ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
     end
 
     def find(_)
