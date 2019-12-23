@@ -27,30 +27,31 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-class NodeRecordSerializer
-  include JSONAPI::Serializer
+require 'spec_helper'
 
-  def id
-    object.name
+RSpec.describe '/groups' do
+  describe 'Index#GET' do
+    it 'can proxy requests to nodeattr-server' do
+      admin_headers
+      get '/groups'
+      groups = parse_last_response_body.data.map(&:id)
+      expect(groups).to contain_exactly(*DemoCluster.new.groups.map(&:name))
+    end
   end
 
-  def type
-    'nodes'
-  end
+  describe 'Show#GET' do
+    it 'can proxy requests to nodeattr-server' do
+      group = DemoCluster.new.groups.first
+      admin_headers
+      get "/groups/#{group.name}"
+      expect(parse_last_response_body.data.id).to eq(group.name)
+    end
 
-  attributes :name
+    it 'returns 404 when the proxy fails' do
+      admin_headers
+      get "/groups/missing"
+      expect(last_response).to be_not_found
+    end
+  end
 end
 
-class GroupRecordSerializer
-  include JSONAPI::Serializer
-
-  def id
-    object.name
-  end
-
-  def type
-    'groups'
-  end
-
-  attributes :name
-end

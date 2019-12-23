@@ -109,12 +109,14 @@ end
 resource :groups, pkre: PKRE_REGEX do
   helpers do
     def find(id)
-      raise NotImplementedError
+      GroupRecord.find("#{Figaro.env.remote_cluster}.#{id}").first
+    rescue JsonApiClient::Errors::NotFound
+      nil
     end
   end
 
   index do
-    raise NotImplementedError
+    GroupRecord.where(cluster_id: ".#{Figaro.env.remote_cluster}").all
   end
 
   show

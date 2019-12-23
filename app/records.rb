@@ -51,6 +51,8 @@ class NodeRecord < Record
 end
 
 class GroupRecord < Record
+  belongs_to :cluster, class_name: 'ClusterRecord', shallow_path: true
+
   property :name, type: :string
   property :params, type: :hash
 end

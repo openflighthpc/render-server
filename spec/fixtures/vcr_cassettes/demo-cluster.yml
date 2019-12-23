@@ -541,4 +541,275 @@ http_interactions:
         }
     http_version: 
   recorded_at: Mon, 23 Dec 2019 12:47:09 GMT
+- request:
+    method: get
+    uri: http://localhost:6301/clusters/.demo-cluster/groups
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '3201'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "data": [
+            {
+              "type": "groups",
+              "id": "5dfd09cde1382365ad3cd8ad",
+              "attributes": {
+                "name": "even",
+                "priority": 100,
+                "params": {
+                  "platform": "demo",
+                  "key": "even",
+                  "cluster": "demo-cluster",
+                  "even": true
+                }
+              },
+              "links": {
+                "self": "/groups/5dfd09cde1382365ad3cd8ad"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/cluster",
+                    "related": "/groups/5dfd09cde1382365ad3cd8ad/cluster"
+                  }
+                },
+                "nodes": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/nodes",
+                    "related": "/groups/5dfd09cde1382365ad3cd8ad/nodes"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/cascades",
+                    "related": "/groups/5dfd09cde1382365ad3cd8ad/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "groups",
+              "id": "5dfd09cde1382365ad3cd8ae",
+              "attributes": {
+                "name": "odd",
+                "priority": 200,
+                "params": {
+                  "platform": "demo",
+                  "key": "odd",
+                  "cluster": "demo-cluster",
+                  "even": false
+                }
+              },
+              "links": {
+                "self": "/groups/5dfd09cde1382365ad3cd8ae"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/cluster",
+                    "related": "/groups/5dfd09cde1382365ad3cd8ae/cluster"
+                  }
+                },
+                "nodes": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/nodes",
+                    "related": "/groups/5dfd09cde1382365ad3cd8ae/nodes"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/cascades",
+                    "related": "/groups/5dfd09cde1382365ad3cd8ae/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "groups",
+              "id": "5dfd09cde1382365ad3cd8af",
+              "attributes": {
+                "name": "subnet",
+                "priority": 300,
+                "params": {
+                  "platform": "demo",
+                  "key": "subnet",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24"
+                }
+              },
+              "links": {
+                "self": "/groups/5dfd09cde1382365ad3cd8af"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8af/relationships/cluster",
+                    "related": "/groups/5dfd09cde1382365ad3cd8af/cluster"
+                  }
+                },
+                "nodes": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8af/relationships/nodes",
+                    "related": "/groups/5dfd09cde1382365ad3cd8af/nodes"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/groups/5dfd09cde1382365ad3cd8af/relationships/cascades",
+                    "related": "/groups/5dfd09cde1382365ad3cd8af/cascades"
+                  }
+                }
+              }
+            }
+          ],
+          "jsonapi": {
+            "version": "1.0"
+          },
+          "included": [
+
+          ]
+        }
+    http_version: 
+  recorded_at: Mon, 23 Dec 2019 12:56:17 GMT
+- request:
+    method: get
+    uri: http://localhost:6301/groups/demo-cluster.even
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '1034'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "data": {
+            "type": "groups",
+            "id": "5dfd09cde1382365ad3cd8ad",
+            "attributes": {
+              "name": "even",
+              "priority": 100,
+              "params": {
+                "platform": "demo",
+                "key": "even",
+                "cluster": "demo-cluster",
+                "even": true
+              }
+            },
+            "links": {
+              "self": "/groups/5dfd09cde1382365ad3cd8ad"
+            },
+            "relationships": {
+              "cluster": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/cluster",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ad/cluster"
+                }
+              },
+              "nodes": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/nodes",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ad/nodes"
+                }
+              },
+              "cascades": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/cascades",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ad/cascades"
+                }
+              }
+            }
+          },
+          "jsonapi": {
+            "version": "1.0"
+          },
+          "included": [
+
+          ]
+        }
+    http_version: 
+  recorded_at: Mon, 23 Dec 2019 13:01:59 GMT
+- request:
+    method: get
+    uri: http://localhost:6301/groups/demo-cluster.missing
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      X-Cascade:
+      - pass
+      Content-Length:
+      - '779'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "errors": [
+            {
+              "id": "e0d01cec-fa5a-4f36-a89e-7f8c4b97d741",
+              "title": "Not Found Error",
+              "detail": "\nmessage:\n  Document not found for class Group with attributes {:cluster=>#<Cluster _id: 5dfd09cde1382365ad3cd8a2, level_params: {\"platform\"=>\"demo\", \"key\"=>\"cluster\", \"cluster\"=>\"demo-cluster\"}, name: \"demo-cluster\">, :name=>\"missing\"}.\nsummary:\n  When calling Group.find_by with a hash of attributes, all attributes provided must match a document in the database or this error will be raised.\nresolution:\n  Search for attributes that are in the database or set the Mongoid.raise_not_found_error configuration option to false, which will cause a nil to be returned instead of raising this error.",
+              "status": "404"
+            }
+          ]
+        }
+    http_version: 
+  recorded_at: Mon, 23 Dec 2019 13:01:59 GMT
 recorded_with: VCR 5.0.0
