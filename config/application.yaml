@@ -28,6 +28,7 @@ remote_cluster: default
 # DYNAMIC DEFAULTS:
 # The following may use relative paths from the install directory
 # or hard coded to be an absolute path
+templates_dir: var/templates
 
 # STATIC DEFAULTS:
 log_level: info
@@ -39,4 +40,4 @@ development:
 test:
   remote_url: http://localhost:6301
   log_level: error
-  remote_cluster: 'demo-cluster'
+  remote_cluster: demo-cluster

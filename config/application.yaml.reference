@@ -49,11 +49,11 @@ remote_jwt:
 remote_cluster:
 
 # =============================================================================
-# Scripts Directory
-# Specify the working directory for the commands. This is to allow the commands
-# to call other scripts easily
+# Templates Directory
+# The path to the directory to store templates in. The path maybe absolute or
+# relative to the install directory.
 # =============================================================================
-scripts_dir:
+templates_dir:
 
 # =============================================================================
 # Number of Worker Commands
