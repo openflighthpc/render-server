@@ -27,47 +27,21 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-class NodeRecordSerializer
-  include JSONAPI::Serializer
+require 'spec_helper'
 
-  def id
-    object.name
+RSpec.describe '/clusters' do
+  describe 'Show#GET' do
+    it 'can proxy requests to nodeattr-server' do
+      admin_headers
+      get "/clusters/default"
+      expect(parse_last_response_body.data.id).to eq('default')
+    end
+
+    it 'returns 404 when the proxy fails' do
+      admin_headers
+      get "/clusters/missing"
+      expect(last_response).to be_not_found
+    end
   end
-
-  def type
-    'nodes'
-  end
-
-  attributes :name
-end
-
-class GroupRecordSerializer
-  include JSONAPI::Serializer
-
-  def id
-    object.name
-  end
-
-  def type
-    'groups'
-  end
-
-  attributes :name
-end
-
-class ClusterRecordSerializer
-  include JSONAPI::Serializer
-
-  # NOTE: The API only supports a single cluster called "default"
-  # The actual remote cluster maybe called a different name
-  def id
-    'default'
-  end
-
-  def type
-    'clusters'
-  end
-
-  attribute :name
 end
 

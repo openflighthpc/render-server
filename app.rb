@@ -125,12 +125,8 @@ end
 resource :clusters, pkre: /default/ do
   helpers do
     def find(_)
-      raise NotImplementedError
+      ClusterRecord.find(".#{Figaro.env.remote_cluster}")
     end
-  end
-
-  index do
-    raise NotImplementedError
   end
 
   show
