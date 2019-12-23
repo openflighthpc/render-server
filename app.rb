@@ -89,7 +89,7 @@ helpers do
   # end
 end
 
-PKRE_REGEX = /(?:[a-zA-Z0-9]+)|(?:[\w-]+\.[\w-]+)/
+PKRE_REGEX = /[\w-]+/
 resource :nodes, pkre: PKRE_REGEX do
   helpers do
     def find(id)
