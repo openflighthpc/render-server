@@ -34,8 +34,9 @@ require 'rake'
 load File.expand_path('../Rakefile', __dir__)
 Rake::Task[:require].invoke
 
-require 'json'
+require 'fakefs/spec_helpers'
 require 'hashie'
+require 'json'
 require 'vcr'
 
 require 'fixtures/demo_cluster'
@@ -72,10 +73,14 @@ RSpec.configure do |c|
   # @vcr_record_mode = :new_episodes
 
   c.around(:each) do |example|
-    VCR.use_cassette(Figaro.env.remote_cluster,
-                     record: @vcr_record_mode || :once,
-                     allow_playback_repeats: true) do
-      example.call
+    FakeFS do
+      FakeFS::FileSystem.clone(File.join(__dir__, 'fixtures/vcr_cassettes'))
+
+      VCR.use_cassette(Figaro.env.remote_cluster,
+                       record: @vcr_record_mode || :once,
+                       allow_playback_repeats: true) do
+        example.call
+      end
     end
   end
 

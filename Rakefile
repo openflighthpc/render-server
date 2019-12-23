@@ -43,6 +43,9 @@ task :require_bundler do
   ERROR
 
   Bundler.require(:default, ENV['RACK_ENV'].to_sym)
+
+  # Turns FakeFS off if running in test mode. The gem isn't installed in production
+  FakeFS.deactivate! if ENV['RACK_ENV'] == 'test'
 end
 
 task require: :require_bundler do

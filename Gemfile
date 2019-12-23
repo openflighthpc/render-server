@@ -49,6 +49,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'fakefs'
   gem 'rack-test'
   gem 'rspec'
   gem 'rspec-collection_matchers'
