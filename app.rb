@@ -94,6 +94,8 @@ resource :nodes, pkre: PKRE_REGEX do
   helpers do
     def find(id)
       NodeRecord.find("#{Figaro.env.remote_cluster}.#{id}").first
+    rescue JsonApiClient::Errors::NotFound
+      nil
     end
   end
 

@@ -498,4 +498,47 @@ http_interactions:
         }
     http_version: 
   recorded_at: Mon, 23 Dec 2019 12:37:21 GMT
+- request:
+    method: get
+    uri: http://localhost:6301/nodes/demo-cluster.missing
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      X-Cascade:
+      - pass
+      Content-Length:
+      - '777'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "errors": [
+            {
+              "id": "93aef42f-b611-44f4-bf7d-d119564b320a",
+              "title": "Not Found Error",
+              "detail": "\nmessage:\n  Document not found for class Node with attributes {:cluster=>#<Cluster _id: 5dfd09cde1382365ad3cd8a2, level_params: {\"platform\"=>\"demo\", \"key\"=>\"cluster\", \"cluster\"=>\"demo-cluster\"}, name: \"demo-cluster\">, :name=>\"missing\"}.\nsummary:\n  When calling Node.find_by with a hash of attributes, all attributes provided must match a document in the database or this error will be raised.\nresolution:\n  Search for attributes that are in the database or set the Mongoid.raise_not_found_error configuration option to false, which will cause a nil to be returned instead of raising this error.",
+              "status": "404"
+            }
+          ]
+        }
+    http_version: 
+  recorded_at: Mon, 23 Dec 2019 12:47:09 GMT
 recorded_with: VCR 5.0.0

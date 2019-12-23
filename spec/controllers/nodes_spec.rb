@@ -46,6 +46,12 @@ RSpec.describe '/nodes' do
       get "/nodes/#{node.name}"
       expect(parse_last_response_body.data.id).to eq(node.name)
     end
+
+    it 'returns 404 when the proxy fails' do
+      admin_headers
+      get "/nodes/missing"
+      expect(last_response).to be_not_found
+    end
   end
 end
 
