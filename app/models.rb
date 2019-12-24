@@ -33,12 +33,15 @@
 class BaseHashieDashModel
   def self.inherited(klass)
     data_class = Class.new(Hashie::Dash) do
+      include ActiveModel::Validations
+
       def self.method_added(m)
         parent.delegate(m, to: :data)
       end
     end
 
     klass.const_set('DataHash', data_class)
+    klass.delegate(*(ActiveModel::Validations.instance_methods - Object.methods), to: :data)
   end
 
   attr_reader :data
@@ -74,9 +77,12 @@ class Template < BaseHashieDashModel
   end
 
   DataHash.class_exec do
-    property :name,     required: true
-    property :payload,  required: true
-    property :type,     required: true
+    property :name
+    property :payload,  default: ''
+    property :type
+
+    validates :name, presence: true
+    validates :type, presence: true
 
     def id
       "#{name}.#{type}"
@@ -87,6 +93,7 @@ class Template < BaseHashieDashModel
     end
 
     def save
+      validate!
       FileUtils.mkdir_p File.dirname(path)
       File.write(path, payload)
     end
