@@ -70,14 +70,29 @@ RSpec.describe '/templates' do
   end
 
   describe 'Create#POST' do
+    let(:template) { Template.new type: 'test_type-1', name: 'test_name-1', payload: 'some-content' }
+
     it 'creates a new template' do
-      template = Template.new type: 'type', name: 'test-template', payload: 'some-content'
       payload = build_payload template,
                               attributes: { type: template.type, name: template.name, payload: template.payload },
                               include_id: false
       admin_headers
       post '/templates', payload.to_json
       expect(File.read(template.path)).to eq(template.payload)
+    end
+
+    [:type, :name].each do |key|
+      it "errors if the #{key} is invalid" do
+        attributes = {
+          type: template.type,
+          name: template.name,
+          payload: template.payload
+        }.tap { |a| a[key] = 'bad%%value' }
+        payload = build_payload template, attributes: attributes, include_id: false
+        admin_headers
+        post '/templates', payload.to_json
+        expect(last_response).to be_unprocessable
+      end
     end
   end
 end

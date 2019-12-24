@@ -156,7 +156,8 @@ resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
   show
 
   create do |attr|
-    Template.new(**attr).tap(&:save)
+    template = Template.new(**attr).tap(&:save)
+    [template.id, template]
   end
 end
 
