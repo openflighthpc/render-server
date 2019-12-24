@@ -52,7 +52,7 @@ task require: :require_bundler do
   require 'config/initializers/figaro'
   require 'config/initializers/logger'
   require 'app/records'
-  # require 'app/models'
+  require 'app/models'
   # require 'app/token'
   require 'app/serializers'
   require 'app'

@@ -75,6 +75,10 @@ RSpec.configure do |c|
   c.around(:each) do |example|
     FakeFS do
       FakeFS::FileSystem.clone(File.join(__dir__, 'fixtures/vcr_cassettes'))
+      FakeFS::FileSystem.clone(File.join(__dir__, '../app.rb'))
+      FakeFS::FileSystem.clone(File.join(__dir__, '../app'))
+      FakeFS::FileSystem.clone(File.join(__dir__, '../spec'))
+      FakeFS::FileSystem.clone(Pry.config.history.file)
 
       VCR.use_cassette(Figaro.env.remote_cluster!,
                        record: @vcr_record_mode || :once,

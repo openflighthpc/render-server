@@ -71,3 +71,12 @@ class ClusterRecordSerializer
   attribute :name
 end
 
+
+class TemplateSerializer
+  include JSONAPI::Serializer
+
+  attribute :name
+  attribute :type
+  attribute :payload
+end
+

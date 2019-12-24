@@ -27,28 +27,57 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-require 'spec_helper'
-
-RSpec.describe '/templates' do
-  describe 'Show#GET' do
-    let(:template_payload) { 'Initial Template Content' }
-    let(:template) do
-      Template.new  type: 'some-template_type',
-                    name: 'test_template-name',
-                    payload: template_payload
+# Sinja has a weird "feature" (bug?) where it can not serialize Hash objects
+# tl;dr Sinja thinks the Hash is the options to the serializer NOT the model
+# Using a decorator design pattern for the models is a work around
+class BaseHashieDashModel
+  def self.inherited(klass)
+    data_class = Class.new(Hashie::Dash) do
+      def self.method_added(m)
+        parent.delegate(m, to: :data)
+      end
     end
 
-    it 'returns 404 if the template is missing' do
-      admin_headers
-      get '/templates/missing.type'
-      expect(last_response).to be_not_found
+    klass.const_set('DataHash', data_class)
+  end
+
+  attr_reader :data
+
+  def initialize(*a)
+    @data = self.class::DataHash.new(*a)
+  end
+end
+
+class Template < BaseHashieDashModel
+  def self.path(name:, type:)
+    File.join(Figaro.env.templates_dir!, type, name)
+  end
+
+  def self.load_from_id(id)
+    name, type = id.split('.', 2)
+    new name: name,
+        type: type,
+        payload: File.read(path(type: type, name: name))
+  rescue Errno::ENOENT
+    nil
+  end
+
+  DataHash.class_exec do
+    property :name,     required: true
+    property :payload,  required: true
+    property :type,     required: true
+
+    def id
+      "#{name}.#{type}"
     end
 
-    it 'can retreive a template' do
-      template.save
-      admin_headers
-      get "/templates/#{template.id}"
-      expect(parse_last_response_body.data.attributes.payload).to eq(template_payload)
+    def path
+      self.class.parent.path(type: type, name: name)
+    end
+
+    def save
+      FileUtils.mkdir_p File.dirname(path)
+      File.write(path, payload)
     end
   end
 end

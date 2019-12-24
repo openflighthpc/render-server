@@ -69,6 +69,10 @@ configure_jsonapi do |c|
 end
 
 helpers do
+  def serialize_model(model, options = {})
+    JSONAPI::Serializer.serialize(model, options)
+  end
+
   # def jwt_token
   #   if match = BEARER_REGEX.match(env['HTTP_AUTHORIZATION'] || '')
   #     match.captures.first
@@ -138,9 +142,10 @@ resource :clusters, pkre: /default/ do
   show
 end
 
-resource :templates, pkre: PKRE_REGEX do
+resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
   helpers do
     def find(id)
+      Template.load_from_id(id)
     end
   end
 
