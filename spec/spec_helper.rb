@@ -112,19 +112,19 @@ RSpec.configure do |c|
     parse_last_response_body.errors.map { |e| e.source.pointer }
   end
 
-  def build_rio(model, fuzzy: true)
+  def build_rio(model)
     type = JSONAPI::Serializer.find_serializer(model, {}).type
-    { type: type, id: (fuzzy ? model.fuzzy_id : model.id) }
+    { type: type, id: model.id }
   end
 
-  def build_payload(model, attributes: {}, relationships: {}, fuzzy: true)
+  def build_payload(model, include_id: true, attributes: {}, relationships: {})
     serializer = JSONAPI::Serializer.find_serializer(model, {})
     rel_hash = relationships.each_with_object({}) do |(key, entity), hash|
       hash[key] = { data: nil }
       hash[key][:data] = if entity.is_a? Array
-        entity.map { |e| build_rio(e, fuzzy: fuzzy) }
+        entity.map { |e| build_rio(e) }
       else
-        build_rio(entity, fuzzy: fuzzy)
+        build_rio(entity)
       end
     end
     {
@@ -133,8 +133,7 @@ RSpec.configure do |c|
         attributes: attributes,
         relationships: rel_hash
       }.tap do |hash|
-        next unless model.class.where(id: model.id.to_s).any?
-        hash[:id] = fuzzy ? model.fuzzy_id : model.id
+        hash[:id] = model.id if include_id
       end
     }
   end
