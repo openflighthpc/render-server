@@ -149,6 +149,10 @@ resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
     end
   end
 
+  index do
+    Template.glob
+  end
+
   show
 end
 

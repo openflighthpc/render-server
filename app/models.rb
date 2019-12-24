@@ -49,9 +49,20 @@ class BaseHashieDashModel
 end
 
 class Template < BaseHashieDashModel
+  def self.glob(name: '*', type: '*')
+    paths = Dir.glob(path(name: name, type: type))
+    paths.map do |p|
+      matches = PATH_REGEX.match(p).named_captures
+      new name: matches['name'],
+          type: matches['type'],
+          payload: File.read(p)
+    end
+  end
+
   def self.path(name:, type:)
     File.join(Figaro.env.templates_dir!, type, name)
   end
+  PATH_REGEX = /#{path(name: '(?<name>.*)', type: '(?<type>.*)')}/
 
   def self.load_from_id(id)
     name, type = id.split('.', 2)

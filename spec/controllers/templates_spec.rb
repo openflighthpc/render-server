@@ -30,6 +30,23 @@
 require 'spec_helper'
 
 RSpec.describe '/templates' do
+  describe 'Index#GET' do
+    it 'returns the templates' do
+      temp1 = Template.new  type: 'type1',
+                            name: 'template1',
+                            payload: ''
+      temp2 = Template.new  type: 'type2',
+                            name: 'template2',
+                            payload: ''
+      temp1.save
+      temp2.save
+      admin_headers
+      get '/templates'
+      expect(parse_last_response_body.data.map(&:id)).to \
+        contain_exactly(temp1.id, temp2.id)
+    end
+  end
+
   describe 'Show#GET' do
     let(:template_payload) { 'Initial Template Content' }
     let(:template) do
