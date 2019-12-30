@@ -95,5 +95,35 @@ RSpec.describe '/templates' do
       end
     end
   end
+
+  describe 'Update#PATCH' do
+    let(:template) { Template.new type: 'test_update-type', name: 'test_name-for_update', payload: 'original' }
+
+    it 'errors if missing' do
+      payload = build_payload template
+      admin_headers
+      patch "/templates/#{template.id}", payload.to_json
+      expect(last_response).to be_not_found
+    end
+
+    it 'can update the template content' do
+      template.save
+      new_content = 'I am the new template content'
+      payload = build_payload template, attributes: { payload: new_content }
+      admin_headers
+      patch "/templates/#{template.id}", payload.to_json
+      updated_template = Template.load_from_id(template.id)
+      expect(updated_template.payload).to eq(new_content)
+    end
+
+    it 'can preform a noop' do
+      template.save
+      admin_headers
+      patch "/templates/#{template.id}", build_payload(template).to_json
+      expect(last_response).to be_successful
+      new_template = Template.load_from_id(template.id)
+      expect(new_template.payload).to eq(template.payload)
+    end
+  end
 end
 

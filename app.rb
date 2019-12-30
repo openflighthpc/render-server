@@ -162,5 +162,11 @@ resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
     template = Template.new(**attr).tap(&:save)
     next template.id, template
   end
+
+  update do |attr|
+    resource.payload = attr[:payload] if attr[:payload]
+    resource.save
+    resource
+  end
 end
 
