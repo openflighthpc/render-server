@@ -28,16 +28,21 @@
 #===============================================================================
 
 class DemoCluster
+  attr_reader :ids
+
+  def initialize(ids: false)
+    @ids = ids
+  end
+
   def cluster
     @cluster ||= ClusterRecord.new(
       name: Figaro.env.remote_cluster!,
-      id: ".#{Figaro.env.remote_cluster!}",
       level_params: {
         platform: 'demo',
         key: 'cluster',
         cluster: Figaro.env.remote_cluster!
       }
-    )
+    ).tap { |c| c.id = ".#{Figaro.env.remote_cluster!}" if ids }
   end
 
   def nodes
@@ -45,55 +50,51 @@ class DemoCluster
       name = "node#{idx}"
       NodeRecord.new(
         name: name,
-        id: "#{name}.#{Figaro.env.remote_cluster!}",
         level_params: {
           key: name,
           ip: "10.10.0.#{idx}"
         },
         relationships: { cluster: cluster }
-      )
+      ).tap { |n| n.id = "#{Figaro.env.remote_cluster!}.#{name}" if ids }
     end
   end
 
   def groups
     @groups ||= begin
-      g = []
+      gs = []
 
       # NOTE: The odds/evens only look reversed because node01 is at index 0
       evens = nodes.each_with_index.reject { |_, i| i.even? }.map { |n, _| n }
       odds = nodes.each_with_index.select { |_, i| i.even? }.map { |n, _| n }
 
-      g << GroupRecord.new(
+      gs << GroupRecord.new(
         name: 'even',
-        id: "even.#{Figaro.env.remote_cluster!}",
         level_params: {
           key: 'even',
           even: true
         },
         relationships: { cluster: cluster, nodes: evens }
-      )
+      ).tap { |g| g.id = "#{Figaro.env.remote_cluster!}.even" if ids }
 
-      g << GroupRecord.new(
+      gs << GroupRecord.new(
         name: 'odd',
-        id: "odd.#{Figaro.env.remote_cluster!}",
         level_params: {
           key: 'odd',
           even: false
         },
         relationships: { cluster: cluster, nodes: odds }
-      )
+      ).tap { |g| g.id = "#{Figaro.env.remote_cluster!}.odd" if ids }
 
-      g << GroupRecord.new(
+      gs << GroupRecord.new(
         name: 'subnet',
-        id: "subnet.#{Figaro.env.remote_cluster!}",
         level_params: {
           key: 'subnet',
           subnet: '10.10.0.0/24'
         },
         relationships: { cluster: cluster, nodes: nodes }
-      )
+      ).tap { |g| g.id "#{Figaro.env.remote_cluster!}.subnet" if ids }
 
-      g
+      gs
     end
   end
 end

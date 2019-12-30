@@ -30,16 +30,16 @@
 require 'spec_helper'
 
 RSpec.describe FileModel::Builder do
-  let(:demo_cluster) { DemoCluster.new }
+  let(:demo_cluster) { DemoCluster.new(ids: true) }
   let(:template) { Template.new(name: 'template-name', type: 'template-type') }
   let(:id) do
     suffix = case resource
              when ClusterRecord
                'cluster'
              when GroupRecord
-               "#{resource.id}.groups"
+               "#{resource.name}.groups"
              when NodeRecord
-               "#{resource.id}.nodes"
+               "#{resource.name}.nodes"
              end
     "#{template.name}.#{template.type}.#{suffix}"
   end
@@ -62,6 +62,12 @@ RSpec.describe FileModel::Builder do
 
     context 'with cluster resource' do
       let(:resource) { ClusterRecord.find(demo_cluster.cluster.id).first }
+
+      include_examples 'file model builder methods'
+    end
+
+    context 'with node resource' do
+      let(:resource) { NodeRecord.find(demo_cluster.nodes.first.id).first }
 
       include_examples 'file model builder methods'
     end

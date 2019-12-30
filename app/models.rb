@@ -115,6 +115,8 @@ class FileModel
     def resource
       if parts.length == 3 && parts.last == 'cluster'
         ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
+      elsif parts.length == 4 && parts.last == 'nodes'
+        NodeRecord.find("#{Figaro.env.remote_cluster!}.#{parts[-2]}").first
       end
     end
 
