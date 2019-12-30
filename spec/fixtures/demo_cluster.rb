@@ -45,6 +45,7 @@ class DemoCluster
       name = "node#{idx}"
       NodeRecord.new(
         name: name,
+        id: "#{name}.#{Figaro.env.remote_cluster!}",
         level_params: {
           key: name,
           ip: "10.10.0.#{idx}"
@@ -64,6 +65,7 @@ class DemoCluster
 
       g << GroupRecord.new(
         name: 'even',
+        id: "even.#{Figaro.env.remote_cluster!}",
         level_params: {
           key: 'even',
           even: true
@@ -73,6 +75,7 @@ class DemoCluster
 
       g << GroupRecord.new(
         name: 'odd',
+        id: "odd.#{Figaro.env.remote_cluster!}",
         level_params: {
           key: 'odd',
           even: false
@@ -82,6 +85,7 @@ class DemoCluster
 
       g << GroupRecord.new(
         name: 'subnet',
+        id: "subnet.#{Figaro.env.remote_cluster!}",
         level_params: {
           key: 'subnet',
           subnet: '10.10.0.0/24'
