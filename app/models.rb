@@ -113,10 +113,10 @@ class FileModel
     end
 
     def build
-      self.class.parent.new(resource, template)
+      self.class.parent.new(context, template)
     end
 
-    def resource
+    def context
       if parts.length == 3 && parts.last == 'cluster'
         ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
       elsif parts.length == 4 && parts.last == 'nodes'
@@ -131,10 +131,10 @@ class FileModel
     end
   end
 
-  attr_reader :resource, :template
+  attr_reader :context, :template
 
   def initialize(resource, template)
-    @resource = resource
+    @context = context
     @template = template
   end
 end

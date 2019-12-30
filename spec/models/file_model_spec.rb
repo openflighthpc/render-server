@@ -48,8 +48,8 @@ RSpec.describe FileModel::Builder do
   subject { described_class.new(id) }
 
   shared_examples 'file model builder methods' do
-    describe '#resource' do
-      it { expect(subject.resource.id).to eq(resource.id) }
+    describe '#context' do
+      it { expect(subject.context.id).to eq(resource.id) }
     end
 
     describe '#template' do
