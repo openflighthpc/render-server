@@ -103,3 +103,20 @@ class Template < BaseHashieDashModel
   end
 end
 
+class FileModel
+  Builder = Struct.new(:id) do
+    def resource
+      parts = id.split('.')
+      if parts.length == 3 && parts.last == 'cluster'
+        ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
+      end
+    end
+  end
+
+  attr_reader :resource, :template
+
+  def initialize(resource, template)
+    @resource = resource
+    @template = template
+  end
+end

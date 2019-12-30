@@ -31,6 +31,7 @@ class DemoCluster
   def cluster
     @cluster ||= ClusterRecord.new(
       name: Figaro.env.remote_cluster!,
+      id: ".#{Figaro.env.remote_cluster!}",
       level_params: {
         platform: 'demo',
         key: 'cluster',
