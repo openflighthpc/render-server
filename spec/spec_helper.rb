@@ -80,6 +80,16 @@ RSpec.configure do |c|
       FakeFS::FileSystem.clone(File.join(__dir__, '../spec'))
       FakeFS::FileSystem.clone(Pry.config.history.file)
 
+      # Clone ActiveSupport translations into the app
+      $:.select { |p| p =~ /activesupport/ }
+        .first
+        .tap { |p| FakeFS::FileSystem.clone(File.join(p, 'active_support/locale/en.yml')) }
+
+      # Clone ActiveModel translations into the app
+      $:.select { |p| p =~ /activemodel/ }
+        .first
+        .tap { |p| FakeFS::FileSystem.clone(File.join(p, 'active_model/locale/en.yml')) }
+
       VCR.use_cassette(Figaro.env.remote_cluster!,
                        record: @vcr_record_mode || :once,
                        allow_playback_repeats: true) do

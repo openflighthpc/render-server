@@ -35,11 +35,14 @@ use Sinja::MethodOverride
 register Sinja
 
 configure_jsonapi do |c|
+  c.validation_exceptions << ActiveModel::ValidationError
+
   c.validation_formatter = ->(e) do
-    relations = e.model.relations.keys.map(&:to_sym)
-    e.model.errors.messages.map do |src, msg|
-      relations.include?(src) ? [src, msg, 'relationships'] : [src, msg]
-    end
+    e.model.errors.messages
+    # relations = e.model.relations.keys.map(&:to_sym)
+    # e.model.errors.messages.map do |src, msg|
+    #   relations.include?(src) ? [src, msg, 'relationships'] : [src, msg]
+    # end
   end
 
   # # Resource roles
@@ -157,7 +160,7 @@ resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
 
   create do |attr|
     template = Template.new(**attr).tap(&:save)
-    [template.id, template]
+    next template.id, template
   end
 end
 

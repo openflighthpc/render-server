@@ -81,8 +81,11 @@ class Template < BaseHashieDashModel
     property :payload,  default: ''
     property :type
 
-    validates :name, presence: true
-    validates :type, presence: true
+    [:name, :type].each do |field|
+      validates field, presence: true, format: {
+        with: /\A[\w-]+\z/, message: 'must be alphanumeric and may contain - and _'
+      }
+    end
 
     def id
       "#{name}.#{type}"
