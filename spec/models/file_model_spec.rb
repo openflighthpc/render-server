@@ -55,6 +55,10 @@ RSpec.describe FileModel::Builder do
     describe '#template' do
       it { expect(subject.template.path).to eq(template.path) }
     end
+
+    describe '#build' do
+      it { expect(subject.build).to be_a(described_class.parent) }
+    end
   end
 
   context 'with an existing template' do

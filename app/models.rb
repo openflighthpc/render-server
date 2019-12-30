@@ -112,6 +112,10 @@ class FileModel
       @parts = id.split('.')
     end
 
+    def build
+      self.class.parent.new(resource, template)
+    end
+
     def resource
       if parts.length == 3 && parts.last == 'cluster'
         ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
