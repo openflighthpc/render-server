@@ -92,7 +92,7 @@ class DemoCluster
           subnet: '10.10.0.0/24'
         },
         relationships: { cluster: cluster, nodes: nodes }
-      ).tap { |g| g.id "#{Figaro.env.remote_cluster!}.subnet" if ids }
+      ).tap { |g| g.id = "#{Figaro.env.remote_cluster!}.subnet" if ids }
 
       gs
     end

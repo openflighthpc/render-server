@@ -73,26 +73,26 @@ RSpec.configure do |c|
     #
     # @vcr_record_mode = :new_episodes
 
-    FakeFS do
-      FakeFS::FileSystem.clone(File.join(__dir__, 'fixtures/vcr_cassettes'))
-      FakeFS::FileSystem.clone(File.join(__dir__, '../app.rb'))
-      FakeFS::FileSystem.clone(File.join(__dir__, '../app'))
-      FakeFS::FileSystem.clone(File.join(__dir__, '../spec'))
-      FakeFS::FileSystem.clone(Pry.config.history.file)
+    VCR.use_cassette(Figaro.env.remote_cluster!,
+                     record: @vcr_record_mode || :once,
+                     allow_playback_repeats: true) do
+      FakeFS do
+        FakeFS::FileSystem.clone(File.join(__dir__, 'fixtures/vcr_cassettes'))
+        FakeFS::FileSystem.clone(File.join(__dir__, '../app.rb'))
+        FakeFS::FileSystem.clone(File.join(__dir__, '../app'))
+        FakeFS::FileSystem.clone(File.join(__dir__, '../spec'))
+        FakeFS::FileSystem.clone(Pry.config.history.file)
 
-      # Clone ActiveSupport translations into the app
-      $:.select { |p| p =~ /activesupport/ }
-        .first
-        .tap { |p| FakeFS::FileSystem.clone(File.join(p, 'active_support/locale/en.yml')) }
+        # Clone ActiveSupport translations into the app
+        $:.select { |p| p =~ /activesupport/ }
+          .first
+          .tap { |p| FakeFS::FileSystem.clone(File.join(p, 'active_support/locale/en.yml')) }
 
-      # Clone ActiveModel translations into the app
-      $:.select { |p| p =~ /activemodel/ }
-        .first
-        .tap { |p| FakeFS::FileSystem.clone(File.join(p, 'active_model/locale/en.yml')) }
+        # Clone ActiveModel translations into the app
+        $:.select { |p| p =~ /activemodel/ }
+          .first
+          .tap { |p| FakeFS::FileSystem.clone(File.join(p, 'active_model/locale/en.yml')) }
 
-      VCR.use_cassette(Figaro.env.remote_cluster!,
-                       record: @vcr_record_mode || :once,
-                       allow_playback_repeats: true) do
         example.call
       end
     end

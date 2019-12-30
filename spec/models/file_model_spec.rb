@@ -71,6 +71,12 @@ RSpec.describe FileModel::Builder do
 
       include_examples 'file model builder methods'
     end
+
+    context 'with group resource' do
+      let(:resource) {GroupRecord.find(demo_cluster.groups.last.id).first }
+
+      include_examples 'file model builder methods'
+    end
   end
 end
 
