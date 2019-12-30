@@ -113,7 +113,8 @@ class FileModel
     end
 
     def build
-      self.class.parent.new(context, template)
+      args = [context, template].reject(&:nil?)
+      self.class.parent.new(*args) if args.length == 2
     end
 
     def context

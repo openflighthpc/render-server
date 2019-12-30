@@ -82,5 +82,21 @@ RSpec.describe FileModel::Builder do
       include_examples 'file model builder methods'
     end
   end
+
+  describe '#build' do
+    let(:id) { '' }
+
+    it 'returns nil when the template is missing' do
+      allow(subject).to receive(:template).and_return(nil)
+      allow(subject).to receive(:context).and_return(demo_cluster.cluster)
+      expect(subject.build).to be_nil
+    end
+
+    it 'returns nil when the context is missing' do
+      allow(subject).to receive(:template).and_return(template)
+      allow(subject).to receive(:context).and_return(nil)
+      expect(subject.build).to be_nil
+    end
+  end
 end
 
