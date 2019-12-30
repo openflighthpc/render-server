@@ -125,5 +125,16 @@ RSpec.describe '/templates' do
       expect(new_template.payload).to eq(template.payload)
     end
   end
+
+  describe 'Destroy#DELETE' do
+    let(:template) { Template.new type: 'test_destroy-type', name: 'test_name-for_destroy', payload: 'original' }
+
+    it 'removes the tempalte' do
+      template.save
+      admin_headers
+      delete "/templates/#{template.id}"
+      expect(File.exists? template.path).to be false
+    end
+  end
 end
 

@@ -168,5 +168,9 @@ resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
     resource.save
     resource
   end
+
+  destroy do
+    FileUtils.rm_f resource.path
+  end
 end
 
