@@ -47,11 +47,23 @@ RSpec.describe FileModel::Builder do
 
   subject { described_class.new(id) }
 
-  context 'with an existing cluster template' do
-    let(:resource) { ClusterRecord.find(demo_cluster.cluster.id).first }
-
+  shared_examples 'file model builder methods' do
     describe '#resource' do
       it { expect(subject.resource.id).to eq(resource.id) }
+    end
+
+    describe '#template' do
+      it { expect(subject.template.path).to eq(template.path) }
+    end
+  end
+
+  context 'with an existing template' do
+    before { template.save }
+
+    context 'with cluster resource' do
+      let(:resource) { ClusterRecord.find(demo_cluster.cluster.id).first }
+
+      include_examples 'file model builder methods'
     end
   end
 end
