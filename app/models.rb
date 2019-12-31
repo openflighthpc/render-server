@@ -113,8 +113,8 @@ class FileModel
     end
 
     def build
-      args = [id, context, template].reject(&:nil?)
-      self.class.parent.new(*args) if args.length == 3
+      args = [context, template].reject(&:nil?)
+      self.class.parent.new(*args) if args.length == 2
     end
 
     def context
@@ -136,12 +136,25 @@ class FileModel
     Builder.new(id).build
   end
 
-  attr_reader :id, :context, :template
+  attr_reader :context, :template
 
-  def initialize(id, resource, template)
-    @id = id
+  def initialize(context, template)
     @context = context
     @template = template
+  end
+
+  def id
+    suffix =  case context
+              when NodeRecord
+                "#{context.name}.nodes"
+              when GroupRecord
+                "#{context.name}.groups"
+              when ClusterRecord
+                'cluster'
+              else
+                raise 'An unexpected error has occurred'
+              end
+    "#{template.id}.#{suffix}"
   end
 
   def payload
