@@ -60,21 +60,38 @@ RSpec.describe '/files' do
   end
 
   describe 'Index#GET' do
-    {
-      '[ids]' => '#{template.id}',
-      '[node.ids]' => '#{node.id}',
-      '[node.group-ids]' => '#{group.id}',
-      '[group.ids]' => '#{group.id}',
-      '[cluster]' => 'true',
-      '[node.all]' => 'true',
-      '[group.all]' => 'true'
-    }.each do |filter, key|
-      it "returns an empty set with single fitler: #{filter}" do
-        template.save
-        other_template.save
+    context 'with a single  filter' do
+      {
+        '[ids]' => -> { template.id },
+        '[node.ids]' => -> { node.name },
+        '[node.group-ids]' => -> { group.name },
+        '[group.ids]' => -> { group.name },
+        '[cluster]' => -> { true },
+        '[node.all]' => -> { true },
+        '[group.all]' => -> { true }
+      }.each do |filter, value|
+        it "returns an empty set: #{filter}" do
+          template.save
+          other_template.save
+          admin_headers
+          get "/files?filter#{filter}=#{instance_exec(&value)}"
+          expect(parse_last_response_body.data).to be_empty
+        end
+      end
+    end
+
+    context 'when requesting a single template with context' do
+      let(:base_params) { "include=context&filter[ids]=#{template.id}" }
+
+      before { template.save }
+
+      it 'can get files for multiple nodes' do
+        nodes = [demo_cluster.nodes.first, demo_cluster.nodes.last]
+        nodes_param = "filter[node.ids]=#{ nodes.map { |n| n.name }.join(',') }"
         admin_headers
-        get "/files?filter#{filter}=#{eval key}"
-        expect(parse_last_response_body.data).to be_empty
+        get "/files?#{base_params}&#{nodes_param}"
+        returned_node_ids = parse_last_response_body.included.map(&:id)
+        expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
       end
     end
   end

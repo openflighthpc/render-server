@@ -962,4 +962,81 @@ http_interactions:
         }
     http_version: 
   recorded_at: Mon, 30 Dec 2019 17:08:48 GMT
+- request:
+    method: get
+    uri: http://localhost:6301/nodes/demo-cluster.node10
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '1072'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "data": {
+            "type": "nodes",
+            "id": "5dfd09cde1382365ad3cd8ac",
+            "attributes": {
+              "name": "node10",
+              "params": {
+                "platform": "demo",
+                "key": "node10",
+                "cluster": "demo-cluster",
+                "subnet": "10.10.0.0/24",
+                "even": true,
+                "ip": "10.10.0.10"
+              }
+            },
+            "links": {
+              "self": "/nodes/5dfd09cde1382365ad3cd8ac"
+            },
+            "relationships": {
+              "cluster": {
+                "links": {
+                  "self": "/nodes/5dfd09cde1382365ad3cd8ac/relationships/cluster",
+                  "related": "/nodes/5dfd09cde1382365ad3cd8ac/cluster"
+                }
+              },
+              "groups": {
+                "links": {
+                  "self": "/nodes/5dfd09cde1382365ad3cd8ac/relationships/groups",
+                  "related": "/nodes/5dfd09cde1382365ad3cd8ac/groups"
+                }
+              },
+              "cascades": {
+                "links": {
+                  "self": "/nodes/5dfd09cde1382365ad3cd8ac/relationships/cascades",
+                  "related": "/nodes/5dfd09cde1382365ad3cd8ac/cascades"
+                }
+              }
+            }
+          },
+          "jsonapi": {
+            "version": "1.0"
+          },
+          "included": [
+
+          ]
+        }
+    http_version: 
+  recorded_at: Tue, 31 Dec 2019 14:35:20 GMT
 recorded_with: VCR 5.0.0

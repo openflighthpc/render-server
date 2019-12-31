@@ -174,6 +174,42 @@ resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
   end
 end
 
+FilesSelector = Struct.new(:fields) do
+  def files
+    contexts.map { |c| templates.map { |t| FileModel.new(c, t) } }.flatten
+  end
+
+  def templates
+    if ids = fields[:ids]
+      ids.split(',').map { |id| Template.load_from_id(id) }.reject(&:nil?)
+    else
+      []
+    end
+  end
+
+  def contexts
+    [*nodes, *groups, *clusters].reject(&:nil?)
+  end
+
+  def nodes
+    accum = []
+    if ids = fields[:'node.ids']
+      accum << ids.split(',').map do |id|
+        NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
+      end
+    end
+    accum.flatten
+  end
+
+  def groups
+    []
+  end
+
+  def clusters
+    []
+  end
+end
+
 resource :files, pkre: /[.\w-]+/ do
   helpers do
     def find(id)
@@ -181,11 +217,9 @@ resource :files, pkre: /[.\w-]+/ do
     end
 
     def filter(_, **fields)
-      []
+      FilesSelector.new(fields).files
     end
   end
-
-  show
 
   filter_keys = [
     :ids,
@@ -197,5 +231,7 @@ resource :files, pkre: /[.\w-]+/ do
     :cluster
   ]
   index(filter_by: filter_keys) { [] }
+
+  show
 end
 
