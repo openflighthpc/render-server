@@ -198,6 +198,14 @@ FilesSelector = Struct.new(:fields) do
         NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
       end
     end
+    if ids = fields[:'node.group_ids']
+      accum << ids.split(',').map do |id|
+        GroupRecord.includes(:nodes)
+                   .find("#{Figaro.env.remote_cluster!}.#{id}")
+                   .first
+                   .nodes
+      end
+    end
     accum.flatten
   end
 

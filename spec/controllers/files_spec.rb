@@ -93,6 +93,16 @@ RSpec.describe '/files' do
         returned_node_ids = parse_last_response_body.included.map(&:id)
         expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
       end
+
+      it 'can get files for nodes in multiple groups' do
+        groups = demo_cluster.groups.select { |g| ['even', 'odd'].include? g.name }
+        groups_param = "filter[node.group-ids]=#{ groups.map { |g| g.name }.join(',') }"
+        nodes = demo_cluster.nodes
+        admin_headers
+        get "/files?#{base_params}&#{groups_param}"
+        returned_node_ids = parse_last_response_body.included.map(&:id)
+        expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
+      end
     end
   end
 end

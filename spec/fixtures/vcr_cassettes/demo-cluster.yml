@@ -1039,4 +1039,578 @@ http_interactions:
         }
     http_version: 
   recorded_at: Tue, 31 Dec 2019 14:35:20 GMT
+- request:
+    method: get
+    uri: http://localhost:6301/groups/demo-cluster.even?include=nodes
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '6918'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "data": {
+            "type": "groups",
+            "id": "5dfd09cde1382365ad3cd8ad",
+            "attributes": {
+              "name": "even",
+              "priority": 100,
+              "params": {
+                "platform": "demo",
+                "key": "even",
+                "cluster": "demo-cluster",
+                "even": true
+              }
+            },
+            "links": {
+              "self": "/groups/5dfd09cde1382365ad3cd8ad"
+            },
+            "relationships": {
+              "cluster": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/cluster",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ad/cluster"
+                }
+              },
+              "nodes": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/nodes",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ad/nodes"
+                },
+                "data": [
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8a4"
+                  },
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8a6"
+                  },
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8a8"
+                  },
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8aa"
+                  },
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8ac"
+                  }
+                ]
+              },
+              "cascades": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ad/relationships/cascades",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ad/cascades"
+                }
+              }
+            }
+          },
+          "jsonapi": {
+            "version": "1.0"
+          },
+          "included": [
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8a4",
+              "attributes": {
+                "name": "node2",
+                "params": {
+                  "platform": "demo",
+                  "key": "node2",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": true,
+                  "ip": "10.10.0.2"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8a4"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a4/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a4/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a4/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a4/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a4/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a4/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8a6",
+              "attributes": {
+                "name": "node4",
+                "params": {
+                  "platform": "demo",
+                  "key": "node4",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": true,
+                  "ip": "10.10.0.4"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8a6"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a6/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a6/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a6/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a6/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a6/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a6/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8a8",
+              "attributes": {
+                "name": "node6",
+                "params": {
+                  "platform": "demo",
+                  "key": "node6",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": true,
+                  "ip": "10.10.0.6"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8a8"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a8/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a8/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a8/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a8/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a8/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a8/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8aa",
+              "attributes": {
+                "name": "node8",
+                "params": {
+                  "platform": "demo",
+                  "key": "node8",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": true,
+                  "ip": "10.10.0.8"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8aa"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8aa/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8aa/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8aa/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8aa/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8aa/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8aa/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8ac",
+              "attributes": {
+                "name": "node10",
+                "params": {
+                  "platform": "demo",
+                  "key": "node10",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": true,
+                  "ip": "10.10.0.10"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8ac"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8ac/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8ac/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8ac/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8ac/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8ac/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8ac/cascades"
+                  }
+                }
+              }
+            }
+          ]
+        }
+    http_version: 
+  recorded_at: Tue, 31 Dec 2019 16:52:57 GMT
+- request:
+    method: get
+    uri: http://localhost:6301/groups/demo-cluster.odd?include=nodes
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '6919'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "data": {
+            "type": "groups",
+            "id": "5dfd09cde1382365ad3cd8ae",
+            "attributes": {
+              "name": "odd",
+              "priority": 200,
+              "params": {
+                "platform": "demo",
+                "key": "odd",
+                "cluster": "demo-cluster",
+                "even": false
+              }
+            },
+            "links": {
+              "self": "/groups/5dfd09cde1382365ad3cd8ae"
+            },
+            "relationships": {
+              "cluster": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/cluster",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ae/cluster"
+                }
+              },
+              "nodes": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/nodes",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ae/nodes"
+                },
+                "data": [
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8a3"
+                  },
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8a5"
+                  },
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8a7"
+                  },
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8a9"
+                  },
+                  {
+                    "type": "nodes",
+                    "id": "5dfd09cde1382365ad3cd8ab"
+                  }
+                ]
+              },
+              "cascades": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/cascades",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ae/cascades"
+                }
+              }
+            }
+          },
+          "jsonapi": {
+            "version": "1.0"
+          },
+          "included": [
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8a3",
+              "attributes": {
+                "name": "node1",
+                "params": {
+                  "platform": "demo",
+                  "key": "node1",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": false,
+                  "ip": "10.10.0.1"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8a3"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a3/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a3/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a3/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a3/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a3/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a3/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8a5",
+              "attributes": {
+                "name": "node3",
+                "params": {
+                  "platform": "demo",
+                  "key": "node3",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": false,
+                  "ip": "10.10.0.3"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8a5"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a5/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a5/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a5/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a5/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a5/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a5/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8a7",
+              "attributes": {
+                "name": "node5",
+                "params": {
+                  "platform": "demo",
+                  "key": "node5",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": false,
+                  "ip": "10.10.0.5"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8a7"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a7/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a7/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a7/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a7/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a7/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a7/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8a9",
+              "attributes": {
+                "name": "node7",
+                "params": {
+                  "platform": "demo",
+                  "key": "node7",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": false,
+                  "ip": "10.10.0.7"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8a9"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a9/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a9/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a9/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a9/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8a9/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8a9/cascades"
+                  }
+                }
+              }
+            },
+            {
+              "type": "nodes",
+              "id": "5dfd09cde1382365ad3cd8ab",
+              "attributes": {
+                "name": "node9",
+                "params": {
+                  "platform": "demo",
+                  "key": "node9",
+                  "cluster": "demo-cluster",
+                  "subnet": "10.10.0.0/24",
+                  "even": false,
+                  "ip": "10.10.0.9"
+                }
+              },
+              "links": {
+                "self": "/nodes/5dfd09cde1382365ad3cd8ab"
+              },
+              "relationships": {
+                "cluster": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8ab/relationships/cluster",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8ab/cluster"
+                  }
+                },
+                "groups": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8ab/relationships/groups",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8ab/groups"
+                  }
+                },
+                "cascades": {
+                  "links": {
+                    "self": "/nodes/5dfd09cde1382365ad3cd8ab/relationships/cascades",
+                    "related": "/nodes/5dfd09cde1382365ad3cd8ab/cascades"
+                  }
+                }
+              }
+            }
+          ]
+        }
+    http_version: 
+  recorded_at: Tue, 31 Dec 2019 16:55:34 GMT
 recorded_with: VCR 5.0.0
