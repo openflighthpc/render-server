@@ -192,21 +192,25 @@ FilesSelector = Struct.new(:fields) do
   end
 
   def nodes
-    accum = []
-    if ids = fields[:'node.ids']
-      accum << ids.split(',').map do |id|
-        NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
+    if fields[:'node.all']
+      NodeRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
+    else
+      accum = []
+      if ids = fields[:'node.ids']
+        accum << ids.split(',').map do |id|
+          NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
+        end
       end
-    end
-    if ids = fields[:'node.group_ids']
-      accum << ids.split(',').map do |id|
-        GroupRecord.includes(:nodes)
-                   .find("#{Figaro.env.remote_cluster!}.#{id}")
-                   .first
-                   .nodes
+      if ids = fields[:'node.group_ids']
+        accum << ids.split(',').map do |id|
+          GroupRecord.includes(:nodes)
+                     .find("#{Figaro.env.remote_cluster!}.#{id}")
+                     .first
+                     .nodes
+        end
       end
+      accum.flatten
     end
-    accum.flatten
   end
 
   def groups

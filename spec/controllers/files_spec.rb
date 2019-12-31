@@ -103,6 +103,14 @@ RSpec.describe '/files' do
         returned_node_ids = parse_last_response_body.included.map(&:id)
         expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
       end
+
+      it 'can get files for all the nodes' do
+        nodes = demo_cluster.nodes
+        admin_headers
+        get "/files?#{base_params}&filter[node.all]=true"
+        returned_node_ids = parse_last_response_body.included.map(&:id)
+        expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
+      end
     end
   end
 end
