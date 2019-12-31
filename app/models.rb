@@ -113,8 +113,8 @@ class FileModel
     end
 
     def build
-      args = [context, template].reject(&:nil?)
-      self.class.parent.new(*args) if args.length == 2
+      args = [id, context, template].reject(&:nil?)
+      self.class.parent.new(*args) if args.length == 3
     end
 
     def context
@@ -132,10 +132,18 @@ class FileModel
     end
   end
 
-  attr_reader :context, :template
+  def self.build(id)
+    Builder.new(id).build
+  end
 
-  def initialize(resource, template)
+  attr_reader :id, :context, :template
+
+  def initialize(id, resource, template)
+    @id = id
     @context = context
     @template = template
+  end
+
+  def payload
   end
 end

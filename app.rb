@@ -174,3 +174,13 @@ resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
   end
 end
 
+resource :files, pkre: /[.\w-]+/ do
+  helpers do
+    def find(id)
+      FileModel.build(id)
+    end
+  end
+
+  show
+end
+

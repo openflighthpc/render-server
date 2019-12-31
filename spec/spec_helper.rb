@@ -77,6 +77,7 @@ RSpec.configure do |c|
                      record: @vcr_record_mode || :once,
                      allow_playback_repeats: true) do
       FakeFS do
+        FakeFS.clear!
         FakeFS::FileSystem.clone(File.join(__dir__, 'fixtures/vcr_cassettes'))
         FakeFS::FileSystem.clone(File.join(__dir__, '../app.rb'))
         FakeFS::FileSystem.clone(File.join(__dir__, '../app'))

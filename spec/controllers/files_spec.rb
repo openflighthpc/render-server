@@ -27,69 +27,24 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-class NodeRecordSerializer
-  include JSONAPI::Serializer
-
-  def id
-    object.name
+RSpec.describe '/files' do
+  let(:template) do
+    Template.new name:    'test',
+                 type:    'test',
+                 payload: '%key%'
   end
 
-  def type
-    'nodes'
+  let(:demo_cluster) { DemoCluster.new(ids: true) }
+
+  describe 'Show#GET' do
+    it 'can get a template for a node' do
+      template.save
+      node = demo_cluster.nodes.first
+      id = "#{template.id}.#{node.name}.nodes"
+      admin_headers
+      get "/files/#{id}"
+      expect(last_response).to be_successful
+    end
   end
-
-  attributes :name
-end
-
-class GroupRecordSerializer
-  include JSONAPI::Serializer
-
-  def id
-    object.name
-  end
-
-  def type
-    'groups'
-  end
-
-  attributes :name
-end
-
-class ClusterRecordSerializer
-  include JSONAPI::Serializer
-
-  # NOTE: The API only supports a single cluster called "default"
-  # The actual remote cluster maybe called a different name
-  def id
-    'default'
-  end
-
-  def type
-    'clusters'
-  end
-
-  attribute :name
-end
-
-
-class TemplateSerializer
-  include JSONAPI::Serializer
-
-  attribute :name
-  attribute :type
-  attribute :payload
-end
-
-class FileModelSerializer
-  include JSONAPI::Serializer
-
-  def type
-    'files'
-  end
-
-  has_one :context
-  has_one :template
-
-  attribute :payload
 end
 
