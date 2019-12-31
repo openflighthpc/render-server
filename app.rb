@@ -179,8 +179,23 @@ resource :files, pkre: /[.\w-]+/ do
     def find(id)
       FileModel.build(id)
     end
+
+    def filter(_, **fields)
+      []
+    end
   end
 
   show
+
+  filter_keys = [
+    :ids,
+    :'node.ids',
+    :'node.group_ids',
+    :'node.all',
+    :'group.ids',
+    :'group.all',
+    :cluster
+  ]
+  index(filter_by: filter_keys) { [] }
 end
 
