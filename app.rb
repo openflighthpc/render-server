@@ -224,7 +224,7 @@ FilesSelector = Struct.new(:fields) do
   end
 
   def clusters
-    []
+    fields[:cluster] ? [ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first] : []
   end
 end
 
