@@ -29,6 +29,24 @@
 
 require 'spec_helper'
 
+RSpec.describe FileModel do
+  describe '#payload' do
+    let(:template_payload) { '%key%' }
+    let(:rendered_payload) { 'value' }
+    let(:template) do
+      Template.new(name: 'test', type: 'test', payload: template_payload)
+    end
+    let(:node) do
+      NodeRecord.new(params: { 'key' => 'value' })
+    end
+    subject { described_class.new(node, template) }
+
+    it 'renders the template with the params' do
+      expect(subject.payload).to eq(rendered_payload)
+    end
+  end
+end
+
 RSpec.describe FileModel::Builder do
   let(:demo_cluster) { DemoCluster.new(ids: true) }
   let(:template) { Template.new(name: 'template-name', type: 'template-type') }

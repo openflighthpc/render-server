@@ -158,5 +158,9 @@ class FileModel
   end
 
   def payload
+    context.params.reduce(template.payload) do |memo, (key, value)|
+      memo.gsub("%#{key}%", value.to_s)
+    end
   end
 end
+
