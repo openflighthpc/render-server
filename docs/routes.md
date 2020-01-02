@@ -268,3 +268,143 @@ Authorization: Bearer <jwt>
 HTTP/1.1 204 OK
 ```
 
+## Files
+
+The `files` resources provide the rendering capability and as such represent a relationship between a `context` and a `template`. The `context` MUST be a `cluster`, `group`, or `node`.
+
+As they represent a possible "relationship" between the `context` and `template`, they are quasi-immuntable and quasi-transient. They can not be directly created, updated, or destroyed. Instead they may be modified by preforming a write/delete action on any of the contexts/templates.
+
+### ID
+
+The `file` ID must encode the IDs for the `context` and `template` and may take one of the following forms:
+
+```
+# Cluster Context
+<template-name>.<template-type>.cluster
+
+# Group Context
+<template-name>.<template-type>.<group-name>.groups
+
+# Node Context
+<template-name>.<template-type>.<group-name>.nodes
+```
+
+### List
+
+The generic list `templates` request will always return an empty set. This is because the complete list of `files` is likely very large and MUST not be returned by default.
+
+```
+GET /files
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+Authorization: Bearer <jwt>
+
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+{
+  "data": [],
+  ... see spec ...
+}
+```
+
+#### Selecting (aka Filtering)
+
+In order to "select" any `files` to be returned, the `index` request must be combined with the `filter` parameter. The mandatory `ids` filter MUST be sent with the request AND at least one additional filter MUST be supplied.
+
+The first mandatory parameter is `filter[ids]` which must give a comma separated list of the `template` ids. This filter selects which templates should be rendered. However, when used individually the request does not specify a `context` and thus an empty array is once again returned.
+
+```
+GET /files?filter[ids]=<csv-template-ids>
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+Authorization: Bearer <jwt>
+
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+{
+  "data": [],
+  ... see spec ...
+}
+```
+
+The second `filter` is used to select the `contexts` and maybe one of many:
+* `filter[node.ids]=<csv-node-ids>`:        Select multiple `nodes` to be rendered
+* `filter[node.group-ids]=<csv-group-ids>`: Select all the `nodes` in multiple groups to be rendered,
+* `filter[node.all]=true`:                  Select all the `nodes` in the cluster to be rendered,
+* `filter[group.ids]=<csv-group-ids>`:      Select multiple `groups` to be rendered,
+* `filter[group.all]=true`:                 Select all the `groups` in the cluster to be rendered,
+* `filter[cluster]=true`:                   Select the `cluster` to be rendered against.
+
+*NOTE*: The `node.group-ids` and `group.ids` are different filters and MUST NOT be used interchangeably. `node.group-ids` will cause the `template` to be rendered against the `node` resource that just happen to be within a `group`. Where `group.ids` will render the `template` against the `group` itself. As `nodes` and `groups` maintain independent parameter sets, this will return different results.
+
+As the above filters only select the `contexts` to be rendered against they will all return an empty array when used in isolation.
+
+```
+GET /files?filter[node.ids]=<csv-node-ids>
+GET /files?filter[node.group-ids]=<csv-group-ids>
+GET /files?filter[node.all]=true
+GET /files?filter[group.ids]=<csv-group-ids>
+GET /files?filter[group.all]=true
+GET /files?filter[cluster]=true
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+Authorization: Bearer <jwt>
+
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+{
+  "data": [],
+  ... see spec ...
+}
+```
+
+The `index` action MAY then combine the `ids` filter with any number of the `context` filters. Examples:
+
+```
+GET /files?filter[ids]=<csv-template-ids>&filter[node.ids]=<csv-node-ids>
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+Authorization: Bearer <jwt>
+
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+{
+  "data": [],
+  ... see spec ...
+}
+```
+
+### Show
+
+A rendered file can be retrieved directly by its `ID`. The `context` and `template` must already exist before hand.
+
+```
+GET /files/:id
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+Authorization: Bearer <jwt>
+
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+{
+  "data": {
+    "type": "files",
+    "id": "<id>",
+    "attributes": {
+      "payload": "<rendered-template-payload>"
+    },
+    "relationships": {
+      "template": {
+        "data": <Template-Resource-Identifier-Object>,
+        "links": ... see spec ...
+      },
+      "context": {
+        "data": <Cluster-Group-Or-Node-Resource-Identifier-Object>,
+        "links": ... see spec ...
+      }
+    },
+    "links": ... see spec ...
+  }, ... see spec ...
+}
+```
+
