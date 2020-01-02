@@ -23,7 +23,7 @@ Start by cloning the repo, adding the binaries to your path, and install the gem
 
 ```
 git clone https://github.com/openflighthpc/render-server
-cd nodeattr-server
+cd render-server
 
 # Add the binaries to your path, which will be used by the remainder of this guide
 export PATH=$PATH:$(pwd)/bin
@@ -34,21 +34,45 @@ bundle install --without development test --path vendor
 bin/bundle install --without development test --path vendor
 ```
 
-### WIP Needs Clarification - Configuration
+### Configuration
 
-The only configuration value required by the server directly is the `jwt_shared_secret`. This must be exported into the environment.
+The main configuration value required by the server directly is the `jwt_shared_secret`. This must be exported into the environment.
 
 ```
 export jwt_shared_secret=<keep-this-secret-safe>
 ```
 
+The server can the either operate in `standalone` or `upstream` mode. Standalone mode allows `render-server` to operate by itself without integrating with other `OpenFlightHPC` services. The `upstream` mode integrates with `nodeattr-server` for the `cluster`, `groups`, and `nodes` configuration values.
+
+#### WIP - Standalone Mode
+
+_Unsupported_
+
+#### Upstream Mode
+
+Two configuration values need to be exported into the environment in order to put the server in `upstream` mode: `remote_url` and `remote_jwt`. The `remote_url` should specify where the upstream server is being hosted and `remote_jwt` is the access token to the server.
+
+*NOTE*: It is highly recommended that `remote_jwt` is a "user token" as `render-server` only needs read access in a production environment. This will inhibit the development `rake` tasks which preform write/delete requests. Extreme caution must be taken when running `rake` tasks with an "admin token".
+
+Whilst `nodeattr-server` fully supports multiple clusters, `render-server` does not. Instead `render-server` will operate on the cluster called `default`. This can be changed by setting the `remote_cluster` environment variable.
+
+*NOTE*: Whilst `remote_cluster` can be configured to any upstream `nodeattr-server` cluster, the `render-server` API will always refer to it as "default". See full API documentation for further details.
+
+```
+export remote_url=<upstream-url>
+export remote_jwt=<upstream-user-token>
+
+# Optional
+export remote_cluster=<upstream-cluster-name | default>
+```
+
 ### WIP - Integrating with OpenFlightHPC/FlightRunway
 
-The [provided systemd unit file](support/nodeattr-server.service) has been designed to integrate with the `OpenFlightHPC` [flight-runway](https://github.com/openflighthpc/flight-runway) package. The following preconditions must be satisfied for the unit file to work:
+The [provided systemd unit file](support/render-server.service) has been designed to integrate with the `OpenFlightHPC` [flight-runway](https://github.com/openflighthpc/flight-runway) package. The following preconditions must be satisfied for the unit file to work:
 1. `OpenFlightHPC` `flight-runway` must be installed,
-2. The server must be installed within `/otp/flight/opt/nodeattr-server`,
+2. The server must be installed within `/opt/flight/opt/render-server`,
 3. The log directory must exist: `/opt/flight/log`, and
-4. The configuration file must exist: `/opt/flight/etc/nodeattr-server.conf`.
+4. The configuration file must exist: `/opt/flight/etc/render-server.conf`.
 
 The configuration file will be loaded into the environment by `systemd` and can be used to override values within `config/application.yaml`. This is the recommended way to set the custom configuration values and provides the following benefits:
 1. The config will be preserved on update,
