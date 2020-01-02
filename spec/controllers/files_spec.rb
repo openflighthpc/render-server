@@ -85,7 +85,7 @@ RSpec.describe '/files' do
 
       before { template.save }
 
-      it 'can get files for multiple nodes' do
+      it 'can get multiple nodes' do
         nodes = [demo_cluster.nodes.first, demo_cluster.nodes.last]
         nodes_param = "filter[node.ids]=#{ nodes.map { |n| n.name }.join(',') }"
         admin_headers
@@ -94,7 +94,7 @@ RSpec.describe '/files' do
         expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
       end
 
-      it 'can get files for nodes in multiple groups' do
+      it 'can get nodes in multiple groups' do
         groups = demo_cluster.groups.select { |g| ['even', 'odd'].include? g.name }
         groups_param = "filter[node.group-ids]=#{ groups.map { |g| g.name }.join(',') }"
         nodes = demo_cluster.nodes
@@ -104,12 +104,21 @@ RSpec.describe '/files' do
         expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
       end
 
-      it 'can get files for all the nodes' do
+      it 'can get all the nodes' do
         nodes = demo_cluster.nodes
         admin_headers
         get "/files?#{base_params}&filter[node.all]=true"
         returned_node_ids = parse_last_response_body.included.map(&:id)
         expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
+      end
+
+      it 'can get multiple groups' do
+        groups = demo_cluster.groups.select { |g| ['even', 'odd'].include? g.name }
+        groups_param = "filter[group.ids]=#{ groups.map { |g| g.name }.join(',') }"
+        admin_headers
+        get "files?#{base_params}&#{groups_param}"
+        returned_group_ids = parse_last_response_body.included.map(&:id)
+        expect(returned_group_ids).to contain_exactly(*groups.map(&:name))
       end
     end
   end

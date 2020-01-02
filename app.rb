@@ -214,7 +214,11 @@ FilesSelector = Struct.new(:fields) do
   end
 
   def groups
-    []
+    if ids = fields[:'group.ids']
+      ids.split(',').map do |id|
+        GroupRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
+      end
+    end
   end
 
   def clusters

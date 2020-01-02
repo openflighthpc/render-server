@@ -1613,4 +1613,80 @@ http_interactions:
         }
     http_version: 
   recorded_at: Tue, 31 Dec 2019 16:55:34 GMT
+- request:
+    method: get
+    uri: http://localhost:6301/groups/demo-cluster.odd
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.17.1
+      Authorization:
+      - "[REDACTED]"
+      Content-Type:
+      - application/vnd.api+json
+      Accept:
+      - application/vnd.api+json
+      Accept-Encoding:
+      - gzip,deflate
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '1033'
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+          "data": {
+            "type": "groups",
+            "id": "5dfd09cde1382365ad3cd8ae",
+            "attributes": {
+              "name": "odd",
+              "priority": 200,
+              "params": {
+                "platform": "demo",
+                "key": "odd",
+                "cluster": "demo-cluster",
+                "even": false
+              }
+            },
+            "links": {
+              "self": "/groups/5dfd09cde1382365ad3cd8ae"
+            },
+            "relationships": {
+              "cluster": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/cluster",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ae/cluster"
+                }
+              },
+              "nodes": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/nodes",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ae/nodes"
+                }
+              },
+              "cascades": {
+                "links": {
+                  "self": "/groups/5dfd09cde1382365ad3cd8ae/relationships/cascades",
+                  "related": "/groups/5dfd09cde1382365ad3cd8ae/cascades"
+                }
+              }
+            }
+          },
+          "jsonapi": {
+            "version": "1.0"
+          },
+          "included": [
+
+          ]
+        }
+    http_version: 
+  recorded_at: Thu, 02 Jan 2020 11:33:25 GMT
 recorded_with: VCR 5.0.0
