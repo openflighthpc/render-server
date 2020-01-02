@@ -214,7 +214,9 @@ FilesSelector = Struct.new(:fields) do
   end
 
   def groups
-    if ids = fields[:'group.ids']
+    if fields[:'group.all']
+      GroupRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
+    elsif ids = fields[:'group.ids']
       ids.split(',').map do |id|
         GroupRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
       end

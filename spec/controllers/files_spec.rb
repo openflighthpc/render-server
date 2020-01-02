@@ -120,6 +120,15 @@ RSpec.describe '/files' do
         returned_group_ids = parse_last_response_body.included.map(&:id)
         expect(returned_group_ids).to contain_exactly(*groups.map(&:name))
       end
+
+      it 'can get all the groups' do
+        groups = demo_cluster.groups
+        groups_param = 'filter[group.all]=true'
+        admin_headers
+        get "files?#{base_params}&#{groups_param}"
+        returned_group_ids = parse_last_response_body.included.map(&:id)
+        expect(returned_group_ids).to contain_exactly(*groups.map(&:name))
+      end
     end
   end
 end
