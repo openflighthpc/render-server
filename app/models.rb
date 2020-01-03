@@ -63,9 +63,9 @@ class Template < BaseHashieDashModel
   end
 
   def self.path(name:, type:)
-    File.join(Figaro.env.templates_dir!, type, name)
+    File.join(Figaro.env.templates_dir!, "#{name}.#{type}")
   end
-  PATH_REGEX = /#{path(name: '(?<name>.*)', type: '(?<type>.*)')}/
+  PATH_REGEX = /#{path(name: '(?<name>[^\.]+)', type: '(?<type>[^\.]+)')}/
 
   def self.load_from_id(id)
     name, type = id.split('.', 2)
