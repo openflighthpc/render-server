@@ -369,7 +369,10 @@ Authorization: Bearer <jwt>
 HTTP/1.1 200 OK
 Content-Type: application/vnd.api+json
 {
-  "data": [],
+  "data": [
+    <File-Resource-Object>,
+    ...
+  ],
   ... see spec ...
 }
 ```
