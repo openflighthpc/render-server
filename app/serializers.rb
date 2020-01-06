@@ -76,7 +76,7 @@ class TemplateSerializer
   include JSONAPI::Serializer
 
   attribute :name
-  attribute :type
+  attribute :file_type
   attribute :payload
 end
 

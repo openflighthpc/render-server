@@ -79,20 +79,24 @@ class Template < BaseHashieDashModel
   DataHash.class_exec do
     property :name
     property :payload,  default: ''
-    property :type
 
-    [:name, :type].each do |field|
+    # TODO: The bare `type` field has been deprecated! Remove it in a future release
+    include Hashie::Extensions::Dash::PropertyTranslation
+    property :type
+    property :file_type, from: :type
+
+    [:name, :file_type].each do |field|
       validates field, presence: true, format: {
         with: /\A[\w-]+\z/, message: 'must be alphanumeric and may contain - and _'
       }
     end
 
     def id
-      "#{name}.#{type}"
+      "#{name}.#{file_type}"
     end
 
     def path
-      self.class.parent.path(type: type, name: name)
+      self.class.parent.path(type: file_type, name: name)
     end
 
     def save
