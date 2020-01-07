@@ -191,6 +191,8 @@ FilesSelector = Struct.new(:fields) do
     [*nodes, *groups, *clusters].reject(&:nil?)
   end
 
+  private
+
   def nodes
     if fields[:'node.all']
       NodeRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
@@ -198,15 +200,23 @@ FilesSelector = Struct.new(:fields) do
       accum = []
       if ids = fields[:'node.ids']
         accum << ids.split(',').map do |id|
-          NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
+          begin
+            NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}")
+          rescue JsonApiClient::Errors::NotFound
+            []
+          end.first
         end
       end
       if ids = fields[:'node.group_ids']
         accum << ids.split(',').map do |id|
-          GroupRecord.includes(:nodes)
-                     .find("#{Figaro.env.remote_cluster!}.#{id}")
-                     .first
-                     .nodes
+          begin
+            GroupRecord.includes(:nodes)
+                       .find("#{Figaro.env.remote_cluster!}.#{id}")
+                       .first
+                       .nodes
+          rescue JsonApiClient::Errors::NotFound
+            []
+          end
         end
       end
       accum.flatten.uniq(&:id)
@@ -218,7 +228,11 @@ FilesSelector = Struct.new(:fields) do
       GroupRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
     elsif ids = fields[:'group.ids']
       ids.split(',').map do |id|
-        GroupRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
+        begin
+          GroupRecord.find("#{Figaro.env.remote_cluster!}.#{id}")
+        rescue JsonApiClient::Errors::NotFound
+          []
+        end.first
       end
     end
   end

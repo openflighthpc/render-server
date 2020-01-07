@@ -138,6 +138,24 @@ RSpec.describe '/files' do
         expect(returned_cluster_ids).to contain_exactly('default')
       end
     end
+
+    ['node.ids', 'node.group-ids', 'group.ids'].each do |filter|
+      describe "when requesting a missing resource via '#{filter}'" do
+        before do
+          template.save
+          admin_headers
+          get "files?filter[ids]=#{template.id}&filter[#{filter}]=missing"
+        end
+
+        it 'returns success' do
+          expect(last_response).to be_successful
+        end
+
+        it 'returns a blank list' do
+          expect(parse_last_response_body.data).to be_empty
+        end
+      end
+    end
   end
 end
 
