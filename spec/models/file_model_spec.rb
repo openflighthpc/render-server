@@ -34,7 +34,7 @@ RSpec.describe FileModel do
     let(:template_payload) { '%key%' }
     let(:rendered_payload) { 'value' }
     let(:template) do
-      Template.new(name: 'test', type: 'test', payload: template_payload)
+      Template.new(name: 'test', payload: template_payload)
     end
     let(:node) do
       NodeRecord.new(params: { 'key' => 'value' })
@@ -70,7 +70,7 @@ RSpec.describe FileModel::Builder do
     context "with extension #{ext}" do
 
       let(:template) do
-        Template.new(name: "name.#{ext}", type: 'TODO-REMOVE-ME')
+        Template.new(name: "name.#{ext}")
       end
 
       let(:id) do
@@ -113,7 +113,7 @@ RSpec.describe FileModel::Builder do
 
   describe '#build' do
     let(:template) do
-      Template.new(name: "name", type: 'TODO-REMOVE-ME')
+      Template.new(name: "name")
     end
 
     subject { described_class.new('') }

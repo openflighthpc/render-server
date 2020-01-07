@@ -59,7 +59,7 @@ class Template < BaseHashieDashModel
     end
   end
 
-  def self.path(name:, type: 'TODO_REMOVE_ME')
+  def self.path(name:)
     File.join(Figaro.env.templates_dir!, "#{name}")
   end
 
@@ -71,10 +71,6 @@ class Template < BaseHashieDashModel
   end
 
   DataHash.class_exec do
-    # TODO: Remove all references to type and file_type
-    # then remove the ignore undeclared
-    include Hashie::Extensions::IgnoreUndeclared
-
     property :name
     property :payload,  default: ''
 

@@ -32,12 +32,10 @@ require 'spec_helper'
 RSpec.describe '/files' do
   let(:template) do
     Template.new name:    'test',
-                 type:    'test',
                  payload: '%key%'
   end
   let(:other_template) do
-    Template.new name:    'other',
-                 type:    'other'
+    Template.new name:    'other'
   end
 
   let(:node) do
