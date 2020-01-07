@@ -128,30 +128,10 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 # Copyright and License
 
-Creative Commons Attribution-ShareAlike 4.0 License, see [LICENSE.txt](LICENSE.txt) for details.
+Eclipse Public License 2.0, see LICENSE.txt for details.
 
-Copyright (C) 2019-present Alces Flight Ltd.
+Copyright (C) 2020-present Alces Flight Ltd.
 
-You should have received a copy of the license along with this work.
-If not, see <http://creativecommons.org/licenses/by-sa/4.0/>.
+This program and the accompanying materials are made available under the terms of the Eclipse Public License 2.0 which is available at https://www.eclipse.org/legal/epl-2.0, or alternative license terms made available by Alces Flight Ltd - please direct inquiries about licensing to licensing@alces-flight.com.
 
-![Creative Commons License](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)
-
-Render Server is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
-
-Based on a work at [https://github.com/openflighthpc/openflight-tools](https://github.com/openflighthpc/openflight-tools).
-
-This content and the accompanying materials are made available available
-under the terms of the Creative Commons Attribution-ShareAlike 4.0
-International License which is available at [https://creativecommons.org/licenses/by-sa/4.0/](https://creativecommons.org/licenses/by-sa/4.0/),
-or alternative license terms made available by Alces Flight Ltd -
-please direct inquiries about licensing to
-[licensing@alces-flight.com](mailto:licensing@alces-flight.com).
-
-Render Server is distributed in the hope that it will be useful, but
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR
-IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS OF
-TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR
-PURPOSE. See the [Creative Commons Attribution-ShareAlike 4.0
-International License](https://creativecommons.org/licenses/by-sa/4.0/) for more
-details.
+RenderServer is distributed in the hope that it will be useful, but WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the Eclipse Public License 2.0 for more details.
