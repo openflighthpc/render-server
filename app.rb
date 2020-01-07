@@ -209,7 +209,7 @@ FilesSelector = Struct.new(:fields) do
                      .nodes
         end
       end
-      accum.flatten
+      accum.flatten.uniq(&:id)
     end
   end
 
