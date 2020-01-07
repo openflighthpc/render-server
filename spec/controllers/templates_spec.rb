@@ -32,11 +32,9 @@ require 'spec_helper'
 RSpec.describe '/templates' do
   describe 'Index#GET' do
     it 'returns the templates' do
-      temp1 = Template.new  type: 'type1',
-                            name: 'template1',
+      temp1 = Template.new  name: 'template1',
                             payload: ''
-      temp2 = Template.new  type: 'type2',
-                            name: 'template2',
+      temp2 = Template.new  name: 'template2.part.ext',
                             payload: ''
       temp1.save
       temp2.save
@@ -47,57 +45,55 @@ RSpec.describe '/templates' do
     end
   end
 
-  describe 'Show#GET' do
-    let(:template_payload) { 'Initial Template Content' }
-    let(:template) do
-      Template.new  type: 'some-template_type',
-                    name: 'test_template-name',
-                    payload: template_payload
-    end
+  ['test_template-name', 'name.part.ext'].each do |name|
+    describe "Show#GET #{name}" do
+      let(:template_payload) { 'Initial Template Content' }
+      let(:template) do
+        Template.new  name: name,
+                      payload: template_payload
+      end
 
-    it 'returns 404 if the template is missing' do
-      admin_headers
-      get '/templates/missing.type'
-      expect(last_response).to be_not_found
-    end
+      it 'returns 404 if the template is missing' do
+        admin_headers
+        get '/templates/missing'
+        expect(last_response).to be_not_found
+      end
 
-    it 'can retreive a template' do
-      template.save
-      admin_headers
-      get "/templates/#{template.id}"
-      expect(parse_last_response_body.data.attributes.payload).to eq(template_payload)
+      it 'can retreive a template' do
+        template.save
+        admin_headers
+        get "/templates/#{template.id}"
+        expect(parse_last_response_body.data.attributes.payload).to eq(template_payload)
+      end
     end
   end
 
   describe 'Create#POST' do
-    let(:template) { Template.new type: 'test_type-1', name: 'test_name-1', payload: 'some-content' }
+    let(:template) { Template.new name: 'test_name-1', payload: 'some-content' }
 
     it 'creates a new template' do
       payload = build_payload template,
-                              attributes: { type: template.type, name: template.name, payload: template.payload },
+                              attributes: { name: template.name, payload: template.payload },
                               include_id: false
       admin_headers
       post '/templates', payload.to_json
       expect(File.read(template.path)).to eq(template.payload)
     end
 
-    [:type, :name].each do |key|
-      it "errors if the #{key} is invalid" do
-        attributes = {
-          type: template.type,
-          name: template.name,
-          payload: template.payload
-        }.tap { |a| a[key] = 'bad%%value' }
-        payload = build_payload template, attributes: attributes, include_id: false
-        admin_headers
-        post '/templates', payload.to_json
-        expect(last_response).to be_unprocessable
-      end
+    it 'errors if the name is invalid' do
+      attributes = {
+        name: template.name,
+        payload: template.payload
+      }.tap { |a| a[:name] = 'bad%%value' }
+      payload = build_payload template, attributes: attributes, include_id: false
+      admin_headers
+      post '/templates', payload.to_json
+      expect(last_response).to be_unprocessable
     end
   end
 
   describe 'Update#PATCH' do
-    let(:template) { Template.new type: 'test_update-type', name: 'test_name-for_update', payload: 'original' }
+    let(:template) { Template.new name: 'test_name-for_update', payload: 'original' }
 
     it 'errors if missing' do
       payload = build_payload template
@@ -127,7 +123,7 @@ RSpec.describe '/templates' do
   end
 
   describe 'Destroy#DELETE' do
-    let(:template) { Template.new type: 'test_destroy-type', name: 'test_name-for_destroy', payload: 'original' }
+    let(:template) { Template.new name: 'test_name-for_destroy', payload: 'original' }
 
     it 'removes the tempalte' do
       template.save

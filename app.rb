@@ -145,7 +145,7 @@ resource :clusters, pkre: /default/ do
   show
 end
 
-resource :templates, pkre: /#{PKRE_REGEX}\.#{PKRE_REGEX}/ do
+resource :templates, pkre: /[\.\w-]+/ do
   helpers do
     def find(id)
       Template.load_from_id(id)

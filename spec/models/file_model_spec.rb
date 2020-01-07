@@ -49,21 +49,8 @@ end
 
 RSpec.describe FileModel::Builder do
   let(:demo_cluster) { DemoCluster.new(ids: true) }
-  let(:template) { Template.new(name: 'template-name', type: 'template-type') }
-  let(:id) do
-    suffix = case resource
-             when ClusterRecord
-               'cluster'
-             when GroupRecord
-               "#{resource.name}.groups"
-             when NodeRecord
-               "#{resource.name}.nodes"
-             end
-    "#{template.name}.#{template.type}.#{suffix}"
-  end
-  let(:resource) { raise 'The resource has not been defined' }
 
-  subject { described_class.new(id) }
+  let(:resource) { raise 'The resource has not been defined' }
 
   shared_examples 'file model builder methods' do
     describe '#context' do
@@ -79,30 +66,57 @@ RSpec.describe FileModel::Builder do
     end
   end
 
-  context 'with an existing template' do
-    before { template.save }
+  ['', 'ext', '.ext', 'part.ext'].each do |ext|
+    context "with extension #{ext}" do
 
-    context 'with cluster resource' do
-      let(:resource) { ClusterRecord.find(demo_cluster.cluster.id).first }
+      let(:template) do
+        Template.new(name: "name.#{ext}", type: 'TODO-REMOVE-ME')
+      end
 
-      include_examples 'file model builder methods'
-    end
+      let(:id) do
+        suffix = case resource
+                 when ClusterRecord
+                   'cluster'
+                 when GroupRecord
+                   "#{resource.name}.groups"
+                 when NodeRecord
+                   "#{resource.name}.nodes"
+                 end
+        "#{template.name}.#{suffix}"
+      end
 
-    context 'with node resource' do
-      let(:resource) { NodeRecord.find(demo_cluster.nodes.first.id).first }
+      subject { described_class.new(id) }
 
-      include_examples 'file model builder methods'
-    end
+      context 'with an existing template' do
+        before { template.save }
 
-    context 'with group resource' do
-      let(:resource) {GroupRecord.find(demo_cluster.groups.last.id).first }
+        context 'with cluster resource' do
+          let(:resource) { ClusterRecord.find(demo_cluster.cluster.id).first }
 
-      include_examples 'file model builder methods'
+          include_examples 'file model builder methods'
+        end
+
+        context 'with node resource' do
+          let(:resource) { NodeRecord.find(demo_cluster.nodes.first.id).first }
+
+          include_examples 'file model builder methods'
+        end
+
+        context 'with group resource' do
+          let(:resource) {GroupRecord.find(demo_cluster.groups.last.id).first }
+
+          include_examples 'file model builder methods'
+        end
+      end
     end
   end
 
   describe '#build' do
-    let(:id) { '' }
+    let(:template) do
+      Template.new(name: "name", type: 'TODO-REMOVE-ME')
+    end
+
+    subject { described_class.new('') }
 
     it 'returns nil when the template is missing' do
       allow(subject).to receive(:template).and_return(nil)

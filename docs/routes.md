@@ -82,7 +82,7 @@ Content-Type: application/vnd.api+json
 Return a single `group` by its ID
 
 ```
-GET //:id
+GET /groups/:id
 Content-Type: application/vnd.api+json
 Accept: application/vnd.api+json
 Authorization: Bearer <jwt>
@@ -155,7 +155,7 @@ Content-Type: application/vnd.api+json
 
 ### ID
 
-The `templates` use a composite ID which takes the form of: `<name>.<type>`. Both the `name` and `type` must be alphanumeric and may contain `-` and `_`. As the `name` and `type` are used to generate the `ID`, they are static to the template and can not be modified post creation.
+The ID for a `template` is its file `name`. It must be an alphanumeric string but MAY also contain the following characters: `-_.`.
 
 ### List
 
@@ -193,7 +193,6 @@ Content-Type: application/vnd.api+json
     "id": "<id>",
     "attributes": {
       "name": "<name>",
-      "type": "<type>",
       "payload": "<payload>"
     },
     "links": ... see spec ...
@@ -203,7 +202,7 @@ Content-Type: application/vnd.api+json
 
 ### Create
 
-Create a new `template` resource with a unique `type` and `name` combination. An error will be raised if the `type`/`name` pair has already been taken. The optional `payload` field should given the content of the template. A blank template will be created if it is omitted.
+Create a new `template` resource with a unique `name`. An error will be raised if the `name` has already been taken. The optional `payload` field should given the content of the template. A blank template will be created if it is omitted.
 
 ```
 POST /templates
@@ -215,7 +214,6 @@ Authorization: Bearer <jwt>
     "type": "templates",
     "attributes": {
       "name": "<name>",
-      "type": "<type>",
       "payload": "<payload>"
     }a
   }
@@ -231,7 +229,7 @@ Content-Type: application/vnd.api+json
 
 ### Update
 
-Update an existing `template` resource's `payload`. As the `name` and `type` are used to generate the `id`, they can not be modified. The `template` must exist before it can be updated.
+Update an existing `template` resource's `payload`. The `name` can not be modified as it is used as the `id`. The `template` must exist before it can be updated.
 
 ```
 PATCH /templates/:id
@@ -280,13 +278,13 @@ The `file` ID must encode the IDs for the `context` and `template` and may take 
 
 ```
 # Cluster Context
-<template-name>.<template-type>.cluster
+<template-name>.cluster
 
 # Group Context
-<template-name>.<template-type>.<group-name>.groups
+<template-name>.<group-name>.groups
 
 # Node Context
-<template-name>.<template-type>.<group-name>.nodes
+<template-name>.<group-name>.nodes
 ```
 
 ### List

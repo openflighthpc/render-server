@@ -119,6 +119,10 @@ RSpec.configure do |c|
     Hashie::Mash.new(JSON.parse(last_response.body))
   end
 
+  def last_request_error
+    last_request.env['sinatra.error']
+  end
+
   def error_pointers
     parse_last_response_body.errors.map { |e| e.source.pointer }
   end

@@ -52,51 +52,42 @@ class BaseHashieDashModel
 end
 
 class Template < BaseHashieDashModel
-  def self.glob(name: '*', type: '*')
-    paths = Dir.glob(path(name: name, type: type))
+  def self.glob(name: '*')
+    paths = Dir.glob(path(name: name))
     paths.map do |p|
-      matches = PATH_REGEX.match(p).named_captures
-      new name: matches['name'],
-          type: matches['type'],
-          payload: File.read(p)
+      new(name: File.basename(p), payload: File.read(p))
     end
   end
 
-  def self.path(name:, type:)
-    File.join(Figaro.env.templates_dir!, "#{name}.#{type}")
+  def self.path(name:, type: 'TODO_REMOVE_ME')
+    File.join(Figaro.env.templates_dir!, "#{name}")
   end
-  PATH_REGEX = /#{path(name: '(?<name>[^\.]+)', type: '(?<type>[^\.]+)')}/
 
   def self.load_from_id(id)
-    name, type = id.split('.', 2)
-    new name: name,
-        type: type,
-        payload: File.read(path(type: type, name: name))
+    new name: id,
+        payload: File.read(path(name: id))
   rescue Errno::ENOENT
     nil
   end
 
   DataHash.class_exec do
+    # TODO: Remove all references to type and file_type
+    # then remove the ignore undeclared
+    include Hashie::Extensions::IgnoreUndeclared
+
     property :name
     property :payload,  default: ''
 
-    # TODO: The bare `type` field has been deprecated! Remove it in a future release
-    include Hashie::Extensions::Dash::PropertyTranslation
-    property :type
-    property :file_type, from: :type
-
-    [:name, :file_type].each do |field|
-      validates field, presence: true, format: {
-        with: /\A[\w-]+\z/, message: 'must be alphanumeric and may contain - and _'
-      }
-    end
+    validates :name, presence: true, format: {
+      with: /\A[\.\w-]+\z/, message: 'must be alphanumeric and may contain: -_.'
+    }
 
     def id
-      "#{name}.#{file_type}"
+      name
     end
 
     def path
-      self.class.parent.path(type: file_type, name: name)
+      self.class.parent.path(name: name)
     end
 
     def save
@@ -109,11 +100,26 @@ end
 
 class FileModel
   class Builder
-    attr_reader :id, :parts
+    attr_reader :id, :scope, :name, :template_id
+
+    ID_REGEX = /\A(?<rest>.*)\.(?<last>[^\.]*)\Z/
 
     def initialize(id)
       @id = id
-      @parts = id.split('.')
+      if ID_REGEX.match?(id)
+        matches = ID_REGEX.match(id)
+        raw_scope = matches.named_captures['last']
+        rest = matches.named_captures['rest']
+        if raw_scope == 'cluster'
+          @scope = 'cluster'
+          @template_id = rest
+        elsif ID_REGEX.match?(rest)
+          matches2 = ID_REGEX.match(rest)
+          @scope = raw_scope
+          @name = matches2.named_captures['last']
+          @template_id = matches2.named_captures['rest']
+        end
+      end
     end
 
     def build
@@ -122,17 +128,18 @@ class FileModel
     end
 
     def context
-      if parts.length == 3 && parts.last == 'cluster'
+      case scope
+      when 'nodes'
+        NodeRecord.find("#{Figaro.env.remote_cluster!}.#{name}").first
+      when 'groups'
+        GroupRecord.find("#{Figaro.env.remote_cluster!}.#{name}").first
+      when 'cluster'
         ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
-      elsif parts.length == 4 && parts.last == 'nodes'
-        NodeRecord.find("#{Figaro.env.remote_cluster!}.#{parts[-2]}").first
-      elsif parts.length == 4 && parts.last == 'groups'
-        GroupRecord.find("#{Figaro.env.remote_cluster!}.#{parts[-2]}").first
       end
     end
 
     def template
-      Template.load_from_id("#{parts[0]}.#{parts[1]}")
+      Template.load_from_id(template_id)
     end
   end
 
