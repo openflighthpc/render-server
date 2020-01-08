@@ -100,14 +100,14 @@ PKRE_REGEX = /[\w-]+/
 resource :nodes, pkre: PKRE_REGEX do
   helpers do
     def find(id)
-      NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
+      NodeProxy.find("#{Figaro.env.remote_cluster!}.#{id}").first
     rescue JsonApiClient::Errors::NotFound
       nil
     end
   end
 
   index do
-    NodeRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").all
+    NodeProxy.where(cluster_id: ".#{Figaro.env.remote_cluster!}").all
   end
 
   show
@@ -195,13 +195,13 @@ FilesSelector = Struct.new(:fields) do
 
   def nodes
     if fields[:'node.all']
-      NodeRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
+      NodeProxy.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
     else
       accum = []
       if ids = fields[:'node.ids']
         accum << ids.split(',').map do |id|
           begin
-            NodeRecord.find("#{Figaro.env.remote_cluster!}.#{id}")
+            NodeProxy.find("#{Figaro.env.remote_cluster!}.#{id}")
           rescue JsonApiClient::Errors::NotFound
             []
           end.first
