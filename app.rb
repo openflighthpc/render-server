@@ -132,7 +132,7 @@ end
 resource :clusters, pkre: /default/ do
   helpers do
     def default_cluster
-      ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
+      ClusterProxy.find(".#{Figaro.env.remote_cluster!}").first
     end
 
     def find(_)
@@ -238,7 +238,7 @@ FilesSelector = Struct.new(:fields) do
   end
 
   def clusters
-    fields[:cluster] ? [ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first] : []
+    fields[:cluster] ? [ClusterProxy.find(".#{Figaro.env.remote_cluster!}").first] : []
   end
 end
 

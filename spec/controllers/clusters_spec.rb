@@ -43,5 +43,21 @@ RSpec.describe '/clusters' do
       expect(last_response).to be_not_found
     end
   end
+
+  context 'when in standalone mode' do
+    around(:all) { |e| run_in_standalone(&e) }
+
+    it 'returns 404 when getting the default cluster' do
+      admin_headers
+      get '/clusters/default'
+      expect(last_response).to be_not_found
+    end
+
+    it 'returns an empty list when indexing the clusters' do
+      admin_headers
+      get '/clusters'
+      expect(parse_last_response_body.data).to be_empty
+    end
+  end
 end
 

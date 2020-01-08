@@ -30,7 +30,7 @@ Content-Type: application/vnd.api+json
 
 ### Show
 
-Request the cluster when in `upstream` mode. 
+Request the cluster when in `upstream` mode. This will respond with a `404` when in standalone mode.
 
 ```
 GET /clusters/default
