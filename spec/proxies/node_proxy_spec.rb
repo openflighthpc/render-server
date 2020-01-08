@@ -36,6 +36,17 @@ RSpec.describe NodeProxy do
     it 'selects the upstream proxy' do
       expect(described_class.proxy_class).to eq(NodeProxy::Upstream)
     end
+
+    [:where, :find].each do |method|
+      describe "##{method}" do
+        let(:inputs) { ['some', 'random', 'array', 'of', 'inputs'] }
+
+        it 'is delegated to NodeRecord' do
+          expect(NodeRecord).to receive(method).with(*inputs)
+          NodeProxy.send(method, *inputs)
+        end
+      end
+    end
   end
 
   context 'when in standalone mode' do

@@ -28,18 +28,27 @@
 #===============================================================================
 
 module NodeProxy
-  def self.proxy_class
-    @proxy_class ||= Figaro.env.remote_url ? Upstream : Standalone
+  class << self
+    delegate_missing_to :proxy_class
+
+    def proxy_class
+      @proxy_class ||= Figaro.env.remote_url ? Upstream : Standalone
+    end
   end
 
   class Base
+    def self.where(*_)
+      raise NotImplementedError
+    end
   end
 
   class Upstream < Base
+    class << self
+      delegate :where, :find, to: NodeRecord
+    end
   end
 
   class Standalone < Base
   end
 end
-
 
