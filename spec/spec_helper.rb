@@ -99,6 +99,18 @@ RSpec.configure do |c|
     end
   end
 
+  def reset_proxies
+    @reset_proxies ||= ObjectSpace.each_object(Module)
+                                  .select { |c| c.included_modules.include? HasProxies }
+    @reset_proxies.each { |c| c.instance_variable_set(:@proxy_class, nil) }
+  end
+
+  def run_in_standalone
+    reset_proxies
+    ClimateControl.modify(remote_url: nil) { yield if block_given? }
+    reset_proxies
+  end
+
   def admin_headers
     header 'Content-Type', 'application/vnd.api+json'
     header 'Accept', 'application/vnd.api+json'

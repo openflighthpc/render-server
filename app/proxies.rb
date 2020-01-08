@@ -54,14 +54,16 @@ module NodeProxy
   include HasProxies
 
   class Base
-    [:where, :find].each do |method|
+    BASE_METHODS = [:where, :find]
+
+    BASE_METHODS.each do |method|
       define_singleton_method(method) { raise NotImplementedError }
     end
   end
 
   class Upstream
     class << self
-      delegate :where, :find, to: NodeRecord
+      delegate(*Base::BASE_METHODS, to: NodeRecord)
     end
   end
 

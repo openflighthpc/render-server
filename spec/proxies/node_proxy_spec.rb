@@ -50,11 +50,7 @@ RSpec.describe NodeProxy do
   end
 
   context 'when in standalone mode' do
-    around(:all) do |example|
-      NodeProxy.instance_variable_set(:@proxy_class, nil)
-      ClimateControl.modify(remote_url: nil) { example.call }
-      NodeProxy.instance_variable_set(:@proxy_class, nil)
-    end
+    around(:all) { |e| run_in_standalone(&e) }
 
     it 'selects the standalone proxy' do
       expect(described_class.proxy_class).to eq(NodeProxy::Standalone)
