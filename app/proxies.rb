@@ -27,33 +27,19 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-source "https://rubygems.org"
+module NodeProxy
+  def self.proxy_class
+    @proxy_class ||= Figaro.env.remote_url ? Upstream : Standalone
+  end
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+  class Base
+  end
 
-gem 'activesupport'
-gem 'figaro'
-gem 'hashie'
-gem 'json_api_client'
-gem 'jwt'
-gem 'rake'
-gem 'puma'
-gem 'sinatra'
-gem 'sinja', '> 1.0.0'
+  class Upstream < Base
+  end
 
-group :development, :test do
-  group :pry do
-    gem 'pry'
-    gem 'pry-byebug'
+  class Standalone < Base
   end
 end
 
-group :test do
-  gem 'climate_control'
-  gem 'fakefs'
-  gem 'rack-test'
-  gem 'rspec'
-  gem 'rspec-collection_matchers'
-  gem 'webmock'
-  gem 'vcr'
-end
+

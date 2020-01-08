@@ -27,33 +27,27 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-source "https://rubygems.org"
+require 'spec_helper'
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+RSpec.describe NodeProxy do
+  context 'when in upstream mode' do
+    # NOOP: The default spec environment is in upstream mode
 
-gem 'activesupport'
-gem 'figaro'
-gem 'hashie'
-gem 'json_api_client'
-gem 'jwt'
-gem 'rake'
-gem 'puma'
-gem 'sinatra'
-gem 'sinja', '> 1.0.0'
+    it 'selects the upstream proxy' do
+      expect(described_class.proxy_class).to eq(NodeProxy::Upstream)
+    end
+  end
 
-group :development, :test do
-  group :pry do
-    gem 'pry'
-    gem 'pry-byebug'
+  context 'when in standalone mode' do
+    around(:all) do |example|
+      NodeProxy.instance_variable_set(:@proxy_class, nil)
+      ClimateControl.modify(remote_url: nil) { example.call }
+      NodeProxy.instance_variable_set(:@proxy_class, nil)
+    end
+
+    it 'selects the standalone proxy' do
+      expect(described_class.proxy_class).to eq(NodeProxy::Standalone)
+    end
   end
 end
 
-group :test do
-  gem 'climate_control'
-  gem 'fakefs'
-  gem 'rack-test'
-  gem 'rspec'
-  gem 'rspec-collection_matchers'
-  gem 'webmock'
-  gem 'vcr'
-end
