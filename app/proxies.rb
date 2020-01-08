@@ -27,28 +27,45 @@
 # https://github.com/openflighthpc/render-server
 #===============================================================================
 
-module NodeProxy
-  class << self
+module HasProxies
+  extend ActiveSupport::Concern
+
+  included do
+    class self::Base
+    end
+
+    class self::Upstream < self::Base
+    end
+
+    class self::Standalone < self::Base
+    end
+  end
+
+  class_methods do
     delegate_missing_to :proxy_class
 
     def proxy_class
-      @proxy_class ||= Figaro.env.remote_url ? Upstream : Standalone
+      @proxy_class ||= Figaro.env.remote_url ? self::Upstream : self::Standalone
     end
   end
+end
+
+module NodeProxy
+  include HasProxies
 
   class Base
-    def self.where(*_)
-      raise NotImplementedError
+    [:where, :find].each do |method|
+      define_singleton_method(method) { raise NotImplementedError }
     end
   end
 
-  class Upstream < Base
+  class Upstream
     class << self
       delegate :where, :find, to: NodeRecord
     end
   end
 
-  class Standalone < Base
+  class Standalone
   end
 end
 
