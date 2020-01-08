@@ -83,21 +83,37 @@ RSpec.describe '/files' do
 
       before { template.save }
 
+      context 'when requesting nodes by group' do
+        let(:groups) { demo_cluster.groups.select { |g| ['even', 'odd'].include? g.name } }
+        let(:nodes) { demo_cluster.nodes }
+
+        before do
+          groups_param = "filter[node.group-ids]=#{ groups.map { |g| g.name }.join(',') }"
+          admin_headers
+          get "/files?#{base_params}&#{groups_param}"
+        end
+
+        context 'when in standalone mode' do
+          around(:all) { |e| run_in_standalone(&e) }
+
+          it 'returns an empty list when requesting nodes by group' do
+            expect(parse_last_response_body.data).to be_empty
+          end
+        end
+
+        context 'when in upstream mode' do
+          it 'can get nodes in multiple groups' do
+            returned_node_ids = parse_last_response_body.included.map(&:id)
+            expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
+          end
+        end
+      end
+
       it 'can get multiple nodes' do
         nodes = [demo_cluster.nodes.first, demo_cluster.nodes.last]
         nodes_param = "filter[node.ids]=#{ nodes.map { |n| n.name }.join(',') }"
         admin_headers
         get "/files?#{base_params}&#{nodes_param}"
-        returned_node_ids = parse_last_response_body.included.map(&:id)
-        expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
-      end
-
-      it 'can get nodes in multiple groups' do
-        groups = demo_cluster.groups.select { |g| ['even', 'odd'].include? g.name }
-        groups_param = "filter[node.group-ids]=#{ groups.map { |g| g.name }.join(',') }"
-        nodes = demo_cluster.nodes
-        admin_headers
-        get "/files?#{base_params}&#{groups_param}"
         returned_node_ids = parse_last_response_body.included.map(&:id)
         expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
       end
@@ -110,22 +126,53 @@ RSpec.describe '/files' do
         expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
       end
 
-      it 'can get multiple groups' do
-        groups = demo_cluster.groups.select { |g| ['even', 'odd'].include? g.name }
-        groups_param = "filter[group.ids]=#{ groups.map { |g| g.name }.join(',') }"
-        admin_headers
-        get "files?#{base_params}&#{groups_param}"
-        returned_group_ids = parse_last_response_body.included.map(&:id)
-        expect(returned_group_ids).to contain_exactly(*groups.map(&:name))
+      context 'when using group.ids' do
+        let(:groups) { demo_cluster.groups.select { |g| ['even', 'odd'].include? g.name } }
+
+        before do
+          admin_headers
+          get "files?#{base_params}&filter[group.ids]=#{ groups.map { |g| g.name }.join(',') }"
+        end
+
+        context 'when in upstream mode' do
+          it 'can get multiple groups' do
+            returned_group_ids = parse_last_response_body.included.map(&:id)
+            expect(returned_group_ids).to contain_exactly(*groups.map(&:name))
+          end
+        end
+
+        context 'when in standalone mode' do
+          around(:all) { |e| run_in_standalone(&e) }
+
+          it 'returns an empty array' do
+            expect(parse_last_response_body.data).to be_empty
+          end
+        end
       end
 
-      it 'can get all the groups' do
-        groups = demo_cluster.groups
-        groups_param = 'filter[group.all]=true'
-        admin_headers
-        get "files?#{base_params}&#{groups_param}"
-        returned_group_ids = parse_last_response_body.included.map(&:id)
-        expect(returned_group_ids).to contain_exactly(*groups.map(&:name))
+      context 'when using group.all' do
+        let(:groups) { demo_cluster.groups }
+
+        before do
+          groups_param = 'filter[group.all]=true'
+          admin_headers
+          get "files?#{base_params}&#{groups_param}"
+        end
+
+        context 'when in upstream mode' do
+          it 'returns all the groups' do
+            returned_group_ids = parse_last_response_body.included.map(&:id)
+            expect(returned_group_ids).to contain_exactly(*groups.map(&:name))
+          end
+        end
+
+        context 'when in standalone mode' do
+          around(:all) { |e| run_in_standalone(&e) }
+
+          it 'returns an empty array' do
+            expect(parse_last_response_body.data).to be_empty
+          end
+        end
       end
 
       it 'can get the cluster' do

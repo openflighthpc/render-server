@@ -53,5 +53,22 @@ RSpec.describe '/groups' do
       expect(last_response).to be_not_found
     end
   end
+
+  context 'when in standalone mode' do
+    around(:all) { |e| run_in_standalone(&e) }
+
+    it 'returns an empty list when indexing groups' do
+      admin_headers
+      get '/groups'
+      expect(parse_last_response_body.data).to be_empty
+    end
+
+    it 'returns not found when getting a group' do
+      group = DemoCluster.new.groups.first
+      admin_headers
+      get "/groups/#{group.name}"
+      expect(last_response).to be_not_found
+    end
+  end
 end
 

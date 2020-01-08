@@ -116,14 +116,14 @@ end
 resource :groups, pkre: PKRE_REGEX do
   helpers do
     def find(id)
-      GroupRecord.find("#{Figaro.env.remote_cluster!}.#{id}").first
+      GroupProxy.find("#{Figaro.env.remote_cluster!}.#{id}").first
     rescue JsonApiClient::Errors::NotFound
       nil
     end
   end
 
   index do
-    GroupRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").all
+    GroupProxy.where(cluster_id: ".#{Figaro.env.remote_cluster!}").all
   end
 
   show
@@ -210,10 +210,9 @@ FilesSelector = Struct.new(:fields) do
       if ids = fields[:'node.group_ids']
         accum << ids.split(',').map do |id|
           begin
-            GroupRecord.includes(:nodes)
-                       .find("#{Figaro.env.remote_cluster!}.#{id}")
-                       .first
-                       .nodes
+            GroupProxy.includes(:nodes)
+                      .find("#{Figaro.env.remote_cluster!}.#{id}")
+                      .first&.nodes || []
           rescue JsonApiClient::Errors::NotFound
             []
           end
@@ -225,11 +224,11 @@ FilesSelector = Struct.new(:fields) do
 
   def groups
     if fields[:'group.all']
-      GroupRecord.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
+      GroupProxy.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
     elsif ids = fields[:'group.ids']
       ids.split(',').map do |id|
         begin
-          GroupRecord.find("#{Figaro.env.remote_cluster!}.#{id}")
+          GroupProxy.find("#{Figaro.env.remote_cluster!}.#{id}")
         rescue JsonApiClient::Errors::NotFound
           []
         end.first

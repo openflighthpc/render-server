@@ -52,11 +52,37 @@ module HasProxies
     end
 
     def register_upstream_delegates(*methods, to:)
-      methods.each do |method|
-        self::Base.define_singleton_method(method) { |*_| raise NotImplementedError }
-      end
+      define_abstract_methods(*methods)
       self::Upstream.eigen_class.delegate(*methods, to: to)
     end
+
+    def register_standalone_methods(*methods, &block)
+      define_abstract_methods(*methods)
+      methods.each do |method|
+        self::Standalone.define_singleton_method(method) do |*a, &b|
+          block.call(*a, &b)
+        end
+      end
+    end
+
+    private
+
+    def define_abstract_methods(*methods)
+      methods.each do |method|
+        next if self::Base.respond_to?(method)
+        self::Base.define_singleton_method(method) { |*_| raise NotImplementedError }
+      end
+    end
+  end
+end
+
+class EmptyRequestProxy
+  def all
+    []
+  end
+
+  def to_a
+    []
   end
 end
 
@@ -69,15 +95,19 @@ module NodeProxy
   end
 end
 
+module GroupProxy
+  include HasProxies
+
+  register_upstream_delegates(:find, :where, :includes, to: GroupRecord)
+  register_standalone_methods(:find) { [] }
+  register_standalone_methods(:where) { EmptyRequestProxy.new }
+  register_standalone_methods(:includes) { self }
+end
+
 module ClusterProxy
   include HasProxies
 
   register_upstream_delegates :find, to: ClusterRecord
-
-  class Standalone
-    def self.find(*_)
-      []
-    end
-  end
+  register_standalone_methods(:find) { [] }
 end
 
