@@ -35,6 +35,9 @@ module HasProxies
     end
 
     class self::Upstream < self::Base
+      def self.eigen_class
+        class << self; return self; end
+      end
     end
 
     class self::Standalone < self::Base
@@ -47,25 +50,20 @@ module HasProxies
     def proxy_class
       @proxy_class ||= Figaro.env.remote_url ? self::Upstream : self::Standalone
     end
+
+    def register_delegates(*methods, to:)
+      methods.each do |method|
+        self::Base.define_singleton_method(method) { raise NotImplementedError }
+      end
+      self::Upstream.eigen_class.delegate(*methods, to: to)
+    end
   end
 end
 
 module NodeProxy
   include HasProxies
 
-  class Base
-    BASE_METHODS = [:where, :find]
-
-    BASE_METHODS.each do |method|
-      define_singleton_method(method) { raise NotImplementedError }
-    end
-  end
-
-  class Upstream
-    class << self
-      delegate(*Base::BASE_METHODS, to: NodeRecord)
-    end
-  end
+  register_delegates :where, :find, to: NodeRecord
 
   class Standalone
   end
