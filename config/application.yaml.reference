@@ -42,7 +42,10 @@ topology_config:
 # consider exporting the `remote_jwt` into the environment instead of hard
 # coding it.
 #
-# The remote_cluster must specify the default cluster the nodes belong to
+# The remote_cluster must specify the default cluster the nodes belong to.
+#
+# By setting the 'remote_url' the server will be put into upstream mode. This
+# disables to topology config configurations.
 # =============================================================================
 remote_url:
 remote_jwt:
@@ -54,14 +57,6 @@ remote_cluster:
 # relative to the install directory.
 # =============================================================================
 templates_dir:
-
-# =============================================================================
-# Number of Worker Commands
-# Specify the number of commands that will be ran in parallel. This is to
-# prevent network timeouts due to a large number of requests being made
-# simultaneously.
-# =============================================================================
-num_worker_commands:
 
 # =============================================================================
 # Log Level
