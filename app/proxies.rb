@@ -104,6 +104,11 @@ class Topology < Hashie::Trash
       NodeRecord.new(name: name, params: params)
     end
   end
+
+  def find_node(name)
+    @find_node ||= {}
+    @find_node[name] ||= nodes.find { |n| n.name == name }
+  end
 end
 
 module NodeProxy
@@ -114,6 +119,13 @@ module NodeProxy
     # NOTE: There is no cluster in standalone mode. The cluster_id is only
     # accepted so it maintains the interface with Upstream
     Topology::Cache.nodes
+  end
+
+  # Find returns a single element array because that is how NodeRecord.find works
+  register_standalone_methods(:find) do |id|
+    # The ID contains the cluster_id, which is ignored in standalone mode
+    _, name = id.split('.', 2)
+    [Topology::Cache.find_node(name)]
   end
 end
 
