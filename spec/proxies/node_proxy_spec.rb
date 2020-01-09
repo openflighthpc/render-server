@@ -83,6 +83,12 @@ RSpec.describe NodeProxy do
         expect(nodes.first).to be_a(NodeRecord)
         expect(nodes.first.name).to eq(name)
       end
+
+      it 'errors if the node is missing' do
+        expect do
+          described_class.find('noop-cluster.missing')
+        end.to raise_error(JsonApiClient::Errors::NotFound)
+      end
     end
   end
 end

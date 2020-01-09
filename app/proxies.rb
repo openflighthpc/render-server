@@ -125,7 +125,8 @@ module NodeProxy
   register_standalone_methods(:find) do |id|
     # The ID contains the cluster_id, which is ignored in standalone mode
     _, name = id.split('.', 2)
-    [Topology::Cache.find_node(name)]
+    node = Topology::Cache.find_node(name) || raise(JsonApiClient::Errors::NotFound.new('Standalone Mode'))
+    [node]
   end
 end
 
