@@ -14,7 +14,7 @@ Shared micro-service that renders files for a cluster, groups, and nodes
 The following are required to run this application:
 
 * OS:           Centos7
-* Ruby:         2.6+
+* Ruby:         2.5+
 * Yum Packages: gcc
 
 ### Manual installation
