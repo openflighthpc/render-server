@@ -1,0 +1,11 @@
+nodes:
+  standalone1:
+    test_key: standalone1-value
+  standalone2:
+    test_key: standalone2-value
+  standalone3:
+    test_key: standalone3-value
+  standalone4:
+    test_key: standalone4-value
+  standalone5:
+    test_key: standalone5-value

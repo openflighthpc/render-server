@@ -86,12 +86,34 @@ class EmptyRequestProxy
   end
 end
 
+class Topology < Hashie::Trash
+  class Cache
+    class << self
+      delegate_missing_to :instance
+
+      def instance
+        @instance = parent.new(YAML.load(File.read(Figaro.env.topology_config!), symbolize_names: true))
+      end
+    end
+  end
+
+  include Hashie::Extensions::IgnoreUndeclared
+
+  property :nodes, transform_with: ->(node_hashes) do
+    node_hashes.map do |name, params|
+      NodeRecord.new(name: name, params: params)
+    end
+  end
+end
+
 module NodeProxy
   include HasProxies
 
   register_upstream_delegates :where, :find, to: NodeRecord
-
-  class Standalone
+  register_standalone_methods(:where) do |cluster_id:|
+    # NOTE: There is no cluster in standalone mode. The cluster_id is only
+    # accepted so it maintains the interface with Upstream
+    Topology::Cache.nodes
   end
 end
 

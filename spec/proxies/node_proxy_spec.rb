@@ -55,6 +55,25 @@ RSpec.describe NodeProxy do
     it 'selects the standalone proxy' do
       expect(described_class.proxy_class).to eq(NodeProxy::Standalone)
     end
+
+    describe '#where' do
+      it 'errors when called with an unrecognised key' do
+        expect do
+          described_class.where(cluster_id: '', some_random_key: true)
+        end.to raise_error(ArgumentError)
+      end
+
+      it 'returns all the topology nodes' do
+        nodes = described_class.where(cluster_id: '')
+        expect(nodes.map(&:name)).to contain_exactly(*topology.nodes.keys)
+      end
+
+      it 'returns an array of NodeRecord' do
+        described_class.where(cluster_id: '').each do |node|
+          expect(node).to be_a(NodeRecord)
+        end
+      end
+    end
   end
 end
 
