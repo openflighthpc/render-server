@@ -76,10 +76,11 @@ RSpec.describe NodeProxy do
     end
 
     describe '#find' do
-      it 'returns a single element NodeRecord array' do
+      it 'returns a single element NodeRecord JsonApiClient::ResultSet' do
         name = topology.nodes.keys.last
         nodes = described_class.find("noop-cluster.#{name}")
         expect(nodes.length).to be(1)
+        expect(nodes).to be_a(JsonApiClient::ResultSet)
         expect(nodes.first).to be_a(NodeRecord)
         expect(nodes.first.name).to eq(name)
       end

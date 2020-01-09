@@ -107,7 +107,7 @@ resource :nodes, pkre: PKRE_REGEX do
   end
 
   index do
-    NodeProxy.where(cluster_id: ".#{Figaro.env.remote_cluster!}").all
+    NodeProxy.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
   end
 
   show

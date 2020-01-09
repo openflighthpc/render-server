@@ -126,7 +126,7 @@ module NodeProxy
     # The ID contains the cluster_id, which is ignored in standalone mode
     _, name = id.split('.', 2)
     node = Topology::Cache.find_node(name) || raise(JsonApiClient::Errors::NotFound.new('Standalone Mode'))
-    [node]
+    JsonApiClient::ResultSet.new [node]
   end
 end
 
