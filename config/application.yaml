@@ -41,3 +41,4 @@ test:
   remote_url: http://localhost:6301
   log_level: error
   remote_cluster: demo-cluster
+  remote_jwt: ''
