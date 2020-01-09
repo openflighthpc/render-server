@@ -1,0 +1,17 @@
+language: ruby
+script: rspec spec --format documentation --order random
+
+install:
+  - gem update bundler
+  - bundle install
+
+rvm:
+  - 2.4.6
+  - 2.5.5
+  - 2.6.3
+
+branches:
+  only:
+    - master
+    - develop
+
