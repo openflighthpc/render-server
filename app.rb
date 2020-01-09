@@ -212,13 +212,13 @@ FilesSelector = Struct.new(:fields) do
           begin
             GroupProxy.includes(:nodes)
                       .find("#{Figaro.env.remote_cluster!}.#{id}")
-                      .first&.nodes || []
+                      .first&.nodes
           rescue JsonApiClient::Errors::NotFound
-            []
+            # NOOP
           end
         end
       end
-      accum.flatten.uniq(&:id)
+      accum.flatten.reject(&:nil?).uniq(&:name)
     end
   end
 
