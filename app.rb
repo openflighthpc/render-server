@@ -107,7 +107,7 @@ resource :nodes, pkre: PKRE_REGEX do
   end
 
   index do
-    NodeProxy.where(cluster_id: ".#{Figaro.env.remote_cluster!}").all
+    NodeProxy.where(cluster_id: ".#{Figaro.env.remote_cluster!}").to_a
   end
 
   show
@@ -212,13 +212,13 @@ FilesSelector = Struct.new(:fields) do
           begin
             GroupProxy.includes(:nodes)
                       .find("#{Figaro.env.remote_cluster!}.#{id}")
-                      .first&.nodes || []
+                      .first&.nodes
           rescue JsonApiClient::Errors::NotFound
-            []
+            # NOOP
           end
         end
       end
-      accum.flatten.uniq(&:id)
+      accum.flatten.reject(&:nil?).uniq(&:name)
     end
   end
 

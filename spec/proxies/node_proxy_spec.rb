@@ -55,6 +55,42 @@ RSpec.describe NodeProxy do
     it 'selects the standalone proxy' do
       expect(described_class.proxy_class).to eq(NodeProxy::Standalone)
     end
+
+    describe '#where' do
+      it 'errors when called with an unrecognised key' do
+        expect do
+          described_class.where(cluster_id: '', some_random_key: true)
+        end.to raise_error(ArgumentError)
+      end
+
+      it 'returns all the topology nodes' do
+        nodes = described_class.where(cluster_id: '')
+        expect(nodes.map(&:name)).to contain_exactly(*topology.nodes.keys)
+      end
+
+      it 'returns an array of NodeRecord' do
+        described_class.where(cluster_id: '').each do |node|
+          expect(node).to be_a(NodeRecord)
+        end
+      end
+    end
+
+    describe '#find' do
+      it 'returns a single element NodeRecord JsonApiClient::ResultSet' do
+        name = topology.nodes.keys.last
+        nodes = described_class.find("noop-cluster.#{name}")
+        expect(nodes.length).to be(1)
+        expect(nodes).to be_a(JsonApiClient::ResultSet)
+        expect(nodes.first).to be_a(NodeRecord)
+        expect(nodes.first.name).to eq(name)
+      end
+
+      it 'errors if the node is missing' do
+        expect do
+          described_class.find('noop-cluster.missing')
+        end.to raise_error(JsonApiClient::Errors::NotFound)
+      end
+    end
   end
 end
 

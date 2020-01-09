@@ -109,21 +109,56 @@ RSpec.describe '/files' do
         end
       end
 
-      it 'can get multiple nodes' do
-        nodes = [demo_cluster.nodes.first, demo_cluster.nodes.last]
-        nodes_param = "filter[node.ids]=#{ nodes.map { |n| n.name }.join(',') }"
-        admin_headers
-        get "/files?#{base_params}&#{nodes_param}"
-        returned_node_ids = parse_last_response_body.included.map(&:id)
-        expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
+      context 'when using node.ids' do
+        before do
+          admin_headers
+          nodes_param = "filter[node.ids]=#{ nodes.join(',') }"
+          get "/files?#{base_params}&#{nodes_param}"
+        end
+
+        context 'when in upstream mode' do
+          let(:nodes) { [demo_cluster.nodes.first.name, demo_cluster.nodes.last.name] }
+
+          it 'can get multiple nodes' do
+            returned_node_ids = parse_last_response_body.included.map(&:id)
+            expect(returned_node_ids).to contain_exactly(*nodes)
+          end
+        end
+
+        context 'when in standalone mode' do
+          let(:nodes) { [topology.nodes.keys.first, topology.nodes.keys.last] }
+
+          around(:all) { |e| run_in_standalone(&e) }
+
+          it 'can get standalone nodes' do
+            returned_node_ids = parse_last_response_body.included.map(&:id)
+            expect(returned_node_ids).to contain_exactly(*nodes)
+          end
+        end
       end
 
-      it 'can get all the nodes' do
-        nodes = demo_cluster.nodes
-        admin_headers
-        get "/files?#{base_params}&filter[node.all]=true"
-        returned_node_ids = parse_last_response_body.included.map(&:id)
-        expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
+      context 'when using node.all' do
+        before do
+          admin_headers
+          get "/files?#{base_params}&filter[node.all]=true"
+        end
+
+        context 'when in upstream mode' do
+          it 'can get all the nodes' do
+            nodes = demo_cluster.nodes
+            returned_node_ids = parse_last_response_body.included.map(&:id)
+            expect(returned_node_ids).to contain_exactly(*nodes.map(&:name))
+          end
+        end
+
+        context 'when in standalone mode' do
+          around(:all) { |e| run_in_standalone(&e) }
+
+          it 'returns the topology nodes' do
+            returned_node_ids = parse_last_response_body.included.map(&:id)
+            expect(returned_node_ids).to contain_exactly(*topology.nodes.keys)
+          end
+        end
       end
 
       context 'when using group.ids' do
@@ -175,12 +210,26 @@ RSpec.describe '/files' do
         end
       end
 
-      it 'can get the cluster' do
-        cluster_param = 'filter[cluster]=all'
-        admin_headers
-        get "files?#{base_params}&#{cluster_param}"
-        returned_cluster_ids = parse_last_response_body.included.map(&:id)
-        expect(returned_cluster_ids).to contain_exactly('default')
+      context 'when using cluster' do
+        before do
+          admin_headers
+          get "files?#{base_params}&filter[cluster]=all"
+        end
+
+        context 'when in upstrea mode' do
+          it 'can get the cluster' do
+            returned_cluster_ids = parse_last_response_body.included.map(&:id)
+            expect(returned_cluster_ids).to contain_exactly('default')
+          end
+        end
+
+        context 'when in standalone mode' do
+          around(:all) { |e| run_in_standalone(&e) }
+
+          it 'returns an empty list' do
+            expect(parse_last_response_body.data).to be_empty
+          end
+        end
       end
     end
 

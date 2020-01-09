@@ -86,12 +86,47 @@ class EmptyRequestProxy
   end
 end
 
+class Topology < Hashie::Trash
+  class Cache
+    class << self
+      delegate_missing_to :instance
+
+      def instance
+        @instance = parent.new(YAML.load(File.read(Figaro.env.topology_config!), symbolize_names: true))
+      end
+    end
+  end
+
+  include Hashie::Extensions::IgnoreUndeclared
+
+  property :nodes, transform_with: ->(node_hashes) do
+    node_hashes.map do |name, params|
+      NodeRecord.new(name: name, params: params)
+    end
+  end
+
+  def find_node(name)
+    @find_node ||= {}
+    @find_node[name] ||= nodes.find { |n| n.name == name }
+  end
+end
+
 module NodeProxy
   include HasProxies
 
   register_upstream_delegates :where, :find, to: NodeRecord
+  register_standalone_methods(:where) do |cluster_id:|
+    # NOTE: There is no cluster in standalone mode. The cluster_id is only
+    # accepted so it maintains the interface with Upstream
+    Topology::Cache.nodes
+  end
 
-  class Standalone
+  # Find returns a single element array because that is how NodeRecord.find works
+  register_standalone_methods(:find) do |id|
+    # The ID contains the cluster_id, which is ignored in standalone mode
+    _, name = id.split('.', 2)
+    node = Topology::Cache.find_node(name) || raise(JsonApiClient::Errors::NotFound.new('Standalone Mode'))
+    JsonApiClient::ResultSet.new [node]
   end
 end
 

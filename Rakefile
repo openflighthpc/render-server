@@ -60,7 +60,7 @@ task require: :require_bundler do
 end
 
 task console: :require do
-  Bundler.require(:pry)
+  Bundler.require(:default, ENV['RACK_ENV'].to_sym, :pry)
   binding.pry
 end
 

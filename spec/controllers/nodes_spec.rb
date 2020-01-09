@@ -37,6 +37,17 @@ RSpec.describe '/nodes' do
       nodes = parse_last_response_body.data.map(&:id)
       expect(nodes).to contain_exactly(*DemoCluster.new.nodes.map(&:name))
     end
+
+    context 'when in standalone mode' do
+      around(:all) { |e| run_in_standalone(&e) }
+
+      it 'returns the toplogy nodes' do
+        admin_headers
+        get '/nodes'
+        nodes = parse_last_response_body.data.map(&:id)
+        expect(nodes).to contain_exactly(*topology.nodes.keys)
+      end
+    end
   end
 
   describe 'Show#GET' do
@@ -51,6 +62,23 @@ RSpec.describe '/nodes' do
       admin_headers
       get "/nodes/missing"
       expect(last_response).to be_not_found
+    end
+
+    context 'when in standalone mode' do
+      around(:all) { |e| run_in_standalone(&e) }
+
+      it 'returns 404 when the node is missing' do
+        admin_headers
+        get '/nodes/missing'
+        expect(last_response).to be_not_found
+      end
+
+      it 'returns a node' do
+        node = topology.nodes.keys.first
+        admin_headers
+        get "/nodes/#{node}"
+        expect(parse_last_response_body.data.id).to eq(node)
+      end
     end
   end
 end

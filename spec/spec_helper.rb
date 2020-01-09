@@ -103,12 +103,23 @@ RSpec.configure do |c|
     @reset_proxies ||= ObjectSpace.each_object(Module)
                                   .select { |c| c.included_modules.include? HasProxies }
     @reset_proxies.each { |c| c.instance_variable_set(:@proxy_class, nil) }
+    Topology::Cache.instance_variable_set(:@instance, nil)
   end
 
   def run_in_standalone
     reset_proxies
-    ClimateControl.modify(remote_url: nil) { yield if block_given? }
+    ClimateControl.modify(remote_url: nil, topology_config: topology_path) do
+      yield if block_given?
+    end
     reset_proxies
+  end
+
+  def topology_path
+    File.expand_path('fixtures/standalone_cluster.yaml', __dir__)
+  end
+
+  def topology
+    Hashie::Mash.load(topology_path)
   end
 
   def admin_headers
