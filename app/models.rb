@@ -76,9 +76,15 @@ class Template < BaseHashieDashModel
     property :saved
     property :payload,  default: ''
 
-    validates :name, presence: true, format: {
-      with: /\A[\.\w-]+\z/, message: 'must be alphanumeric and may contain: -_.'
-    }
+    name_opts = { format: {
+      with: /\A[\.\w-]*\z/, message: 'must be alphanumeric and may contain: -_.'
+    }}
+    validates :name, presence: true, if: :saved?, **name_opts
+    validates :name, unless: :saved?, **name_opts
+
+    def saved?
+      saved ? true : false
+    end
 
     def id
       name
