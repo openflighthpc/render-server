@@ -22,12 +22,13 @@ jwt_shared_secret:
 
 # =============================================================================
 # Topology Config
-# Specify the path to the topology configuration file. By default it will look
-# within the 'config' directory. Refer to `config/topology.example.yaml` for
-# details on how to configure this file
+# Specify the path to the topology configuration file. Both absolute and
+# relative paths are supported by this config value. Relative paths are from
+# the install directory.
 #
-# Both absolute and relative paths are supported by this config value. Relative
-# paths are from the install directory
+# This config is used when in standalone mode; and ignored in upstream mode.
+# It should contain a list of nodes by name and there corresponding node
+# parameters
 # =============================================================================
 topology_config:
 
