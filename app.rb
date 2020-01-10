@@ -34,6 +34,8 @@ require 'hashie'
 use Sinja::MethodOverride
 register Sinja
 
+BEARER_REGEX = /\ABearer\s(.*)\Z/
+
 configure_jsonapi do |c|
   c.validation_exceptions << ActiveModel::ValidationError
 
@@ -45,30 +47,30 @@ configure_jsonapi do |c|
     # end
   end
 
-  # # Resource roles
-  # c.default_roles = {
-  #   index: [:user, :admin],
-  #   show: [:user, :admin],
-  #   create: :admin,
-  #   update: :admin,
-  #   destroy: :admin
-  # }
+  # Resource roles
+  c.default_roles = {
+    index: [:user, :admin],
+    show: [:user, :admin],
+    create: :admin,
+    update: :admin,
+    destroy: :admin
+  }
 
-  # # To-one relationship roles
-  # c.default_has_one_roles = {
-  #   pluck: [:user, :admin],
-  #   prune: :admin,
-  #   graft: :admin
-  # }
+  # To-one relationship roles
+  c.default_has_one_roles = {
+    pluck: [:user, :admin],
+    prune: :admin,
+    graft: :admin
+  }
 
-  # # To-many relationship roles
-  # c.default_has_many_roles = {
-  #   fetch: [:user, :admin],
-  #   clear: :admin,
-  #   replace: :admin,
-  #   merge: :admin,
-  #   subtract: :admin
-  # }
+  # To-many relationship roles
+  c.default_has_many_roles = {
+    fetch: [:user, :admin],
+    clear: :admin,
+    replace: :admin,
+    merge: :admin,
+    subtract: :admin
+  }
 end
 
 helpers do
@@ -76,33 +78,58 @@ helpers do
     JSONAPI::Serializer.serialize(model, options)
   end
 
-  # def jwt_token
-  #   if match = BEARER_REGEX.match(env['HTTP_AUTHORIZATION'] || '')
-  #     match.captures.first
-  #   else
-  #     ''
-  #   end
-  # end
+  def jwt_token
+    if match = BEARER_REGEX.match(env['HTTP_AUTHORIZATION'] || '')
+      match.captures.first
+    else
+      ''
+    end
+  end
 
-  # def role
-  #   token = Token.from_jwt(jwt_token)
-  #   if token.admin && token.valid
-  #     :admin
-  #   elsif token.valid
-  #     :user
-  #   else
-  #     :unknown
-  #   end
-  # end
+  def role
+    token = Token.from_jwt(jwt_token)
+    if token.admin && token.valid
+      :admin
+    elsif token.valid
+      :user
+    else
+      :unknown
+    end
+  end
+
+  def find_context(type:, id:)
+    case type
+    when 'clusters'
+      find_cluster
+    when 'groups'
+      find_group(id)
+    when 'nodes'
+      find_node(id)
+    end
+  end
+
+  def find_cluster(_ = nil)
+    ClusterProxy.find(".#{Figaro.env.remote_cluster!}").first
+  end
+
+  def find_group(id)
+    GroupProxy.find("#{Figaro.env.remote_cluster!}.#{id}").first
+  rescue JsonApiClient::Errors::NotFound
+    nil
+  end
+
+  def find_node(id)
+    NodeProxy.find("#{Figaro.env.remote_cluster!}.#{id}").first
+  rescue JsonApiClient::Errors::NotFound
+    nil
+  end
 end
 
 PKRE_REGEX = /[\w-]+/
 resource :nodes, pkre: PKRE_REGEX do
   helpers do
     def find(id)
-      NodeProxy.find("#{Figaro.env.remote_cluster!}.#{id}").first
-    rescue JsonApiClient::Errors::NotFound
-      nil
+      find_node(id)
     end
   end
 
@@ -116,9 +143,7 @@ end
 resource :groups, pkre: PKRE_REGEX do
   helpers do
     def find(id)
-      GroupProxy.find("#{Figaro.env.remote_cluster!}.#{id}").first
-    rescue JsonApiClient::Errors::NotFound
-      nil
+      find_group(id)
     end
   end
 
@@ -131,16 +156,12 @@ end
 
 resource :clusters, pkre: /default/ do
   helpers do
-    def default_cluster
-      ClusterProxy.find(".#{Figaro.env.remote_cluster!}").first
-    end
-
     def find(_)
-      default_cluster
+      find_cluster
     end
   end
 
-  index { [default_cluster] }
+  index { [find_cluster] }
 
   show
 end
@@ -264,5 +285,18 @@ resource :files, pkre: /[.\w-]+/ do
   index(filter_by: filter_keys) { [] }
 
   show
+
+  create(roles: [:user, :admin]) do |attr|
+    template = Template.new(payload: attr[:template])
+    file = FileModel.new(nil, template)
+    next file.id, file
+  end
+
+  has_one :context do
+    graft(sideload_on: :create) do |rio|
+      resource.context = find_context(**rio)
+      true
+    end
+  end
 end
 

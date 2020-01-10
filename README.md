@@ -44,10 +44,6 @@ export jwt_shared_secret=<keep-this-secret-safe>
 
 The server can the either operate in `standalone` or `upstream` mode. Standalone mode allows `render-server` to operate by itself without integrating with other `OpenFlightHPC` services. The `upstream` mode integrates with `nodeattr-server` for the `cluster`, `groups`, and `nodes` configuration values.
 
-#### WIP - Standalone Mode
-
-_Unsupported_
-
 #### Upstream Mode
 
 Two configuration values need to be exported into the environment in order to put the server in `upstream` mode: `remote_url` and `remote_jwt`. The `remote_url` should specify where the upstream server is being hosted and `remote_jwt` is the access token to the server.
@@ -56,7 +52,7 @@ Two configuration values need to be exported into the environment in order to pu
 
 Whilst `nodeattr-server` fully supports multiple clusters, `render-server` does not. Instead `render-server` will operate on the cluster called `default`. This can be changed by setting the `remote_cluster` environment variable.
 
-*NOTE*: Whilst `remote_cluster` can be configured to any upstream `nodeattr-server` cluster, the `render-server` API will always refer to it as "default". See full API documentation for further details.
+*NOTE*: Whilst `remote_cluster` can be configured to any upstream `nodeattr-server` cluster, the `render-server` API will always refer to it as "default". See full [API specifications](docs/routes.md) for further details.
 
 ```
 export remote_url=<upstream-url>
@@ -66,7 +62,39 @@ export remote_jwt=<upstream-user-token>
 export remote_cluster=<upstream-cluster-name | default>
 ```
 
-### WIP - Integrating with OpenFlightHPC/FlightRunway
+#### Standalone Mode
+
+Standalone mode is activated when `remote_url` has not been set. The `cluster` and
+`groups` functionality is disabled when in standalone mode. Any requests for clusters/groups will result in a `Not Found` error, or will be ignored (see [api specification](docs/routes.md) for further details).
+
+Instead the `nodes` list will be loaded from the "topology". The path to the `topology_config` is configurable as either an absolute or relative path to the install directory ([see for further details](config/application.yaml.reference)). By default it will be loaded from: `config/topology.yaml`.
+
+The following will explicitly set the server into `standalone` mode.
+NOTE: It will implicitly use these settings when `remote_url` is not set
+
+```
+unset remote_url
+export topology_config=config/topology.yaml
+
+cat <<'EOF' >config/topology.yaml
+... Topology Config Content ...
+EOF
+```
+
+An example topology config could look like:
+
+```
+nodes:
+  node01:
+    role: compute
+    ip:   10.101.0.1
+  <node-id>:
+    <param-key>: <value>
+    ...
+  ...
+```
+
+### Integrating with systemd and OpenFlightHPC/FlightRunway
 
 The [provided systemd unit file](support/render-server.service) has been designed to integrate with the `OpenFlightHPC` [flight-runway](https://github.com/openflighthpc/flight-runway) package. The following preconditions must be satisfied for the unit file to work:
 1. `OpenFlightHPC` `flight-runway` must be installed,
@@ -98,13 +126,13 @@ The `pumactl` command can be used to preform various start/stop/restart actions.
 bin/pumactl stop
 ```
 
-## WIP Authentication
+## Authentication
 
 The API requires all requests to carry with a [jwt](https://jwt.io). Admin tokens must set the `admin` flag to `true` within their body. All other valid tokens are assumed to have `user` level privileges. Admins have full `read`/`write` access, where a `user` only has `read` access.
 
 The following `rake` tasks are used to generate tokens with 30 days expiry. Tokens from other sources will be accepted as long as they:
 1. Where signed with the same shared secret,
-3. An [expiry claim](https://tools.ietf.org/html/rfc7519#section-4.1.4) has been made.
+2. An [expiry claim](https://tools.ietf.org/html/rfc7519#section-4.1.4) has been made.
 
 As the shared secret is environment dependant, the `RACK_ENV` must be set within your environment.
 
@@ -113,10 +141,13 @@ As the shared secret is environment dependant, the `RACK_ENV` must be set within
 export RACK_ENV=production
 
 # Generate a user token
-rake token:admin
+rake token:admin    # Valid for 30 days [Default]
+rake token:admin[1] # Valid for 1 day   [Smallest]
 
 # Generate a user token
-rake token:user
+rake token:user       # Valid for 30 days [Default]
+rake token:user[360]  # Valid for 60 days
+
 ```
 
 # Contributing

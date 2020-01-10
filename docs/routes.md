@@ -61,7 +61,7 @@ The ID for `group` is always the same as it's name. This means it is alphanumeri
 
 ### List
 
-Return a list of available `groups` when in `upstream` mode. Groups are not available when in standalone mode.
+Return a list of available `groups` when in `upstream` mode. Returns an empty list in standalone mode as groups are disabled.
 
 ```
 GET /groups
@@ -79,7 +79,7 @@ Content-Type: application/vnd.api+json
 
 ### Show
 
-Return a single `group` by its ID
+Return a single `group` by its ID. This will always respond `Not Found` in `standalone` mode.
 
 ```
 GET /groups/:id
@@ -190,7 +190,7 @@ Content-Type: application/vnd.api+json
 {
   "data": {
     "type": "templates",
-    "id": "<id>",
+    "id": "<name>",
     "attributes": {
       "name": "<name>",
       "payload": "<payload>"
@@ -215,7 +215,7 @@ Authorization: Bearer <jwt>
     "attributes": {
       "name": "<name>",
       "payload": "<payload>"
-    }a
+    }
   }
 }
 
@@ -241,7 +241,7 @@ Authorization: Bearer <jwt>
     "type": "templates",
     "attributes": {
       "payload": "<payload>"
-    }a
+    }
   }
 }
 
@@ -270,7 +270,7 @@ HTTP/1.1 204 OK
 
 The `files` resources provide the rendering capability and as such represent a relationship between a `context` and a `template`. The `context` MUST be a `cluster`, `group`, or `node`.
 
-As they represent a possible "relationship" between the `context` and `template`, they are quasi-immuntable and quasi-transient. They can not be directly created, updated, or destroyed. Instead they may be modified by preforming a write/delete action on any of the contexts/templates.
+As they represent a possible "relationship" between the `context` and `template`, they are quasi-immuntable and ephemeral. They can not be directly created, updated, or destroyed. Instead they may be modified by preforming a write/delete action on any of the contexts/templates.
 
 ### ID
 
@@ -278,7 +278,7 @@ The `file` ID must encode the IDs for the `context` and `template` and may take 
 
 ```
 # Cluster Context
-<template-name>.cluster
+<template-name>.default.clusters
 
 # Group Context
 <template-name>.<group-name>.groups
@@ -309,7 +309,7 @@ Content-Type: application/vnd.api+json
 
 In order to "select" any `files` to be returned, the `index` request must be combined with the `filter` parameter. The mandatory `ids` filter MUST be sent with the request AND at least one additional filter MUST be supplied.
 
-The first mandatory parameter is `filter[ids]` which must give a comma separated list of the `template` ids. This filter selects which templates should be rendered. However, when used individually the request does not specify a `context` and thus an empty array is once again returned.
+The first mandatory parameter is `filter[ids]` which MUST give a comma separated list of the `template` ids. This filter selects which templates should be rendered but does not provide the any `context`. When used individually it MUST return an empty array.
 
 ```
 GET /files?filter[ids]=<csv-template-ids>
@@ -325,7 +325,7 @@ Content-Type: application/vnd.api+json
 }
 ```
 
-The second `filter` is used to select the `contexts` and maybe one of many:
+The subsequent `filter` queries are used to select the `contexts`. They maybe one or more of the following:
 * `filter[node.ids]=<csv-node-ids>`:        Select multiple `nodes` to be rendered
 * `filter[node.group-ids]=<csv-group-ids>`: Select all the `nodes` in multiple groups to be rendered,
 * `filter[node.all]=true`:                  Select all the `nodes` in the cluster to be rendered,
@@ -333,7 +333,7 @@ The second `filter` is used to select the `contexts` and maybe one of many:
 * `filter[group.all]=true`:                 Select all the `groups` in the cluster to be rendered,
 * `filter[cluster]=true`:                   Select the `cluster` to be rendered against.
 
-*NOTE*: The `node.group-ids` and `group.ids` are different filters and MUST NOT be used interchangeably. `node.group-ids` will cause the `template` to be rendered against the `node` resource that just happen to be within a `group`. Where `group.ids` will render the `template` against the `group` itself. As `nodes` and `groups` maintain independent parameter sets, this will return different results.
+*NOTE*: The `node.group-ids` and `group.ids` are different filters and can not be used interchangeably. `node.group-ids` will cause the `template` to be rendered against the `node` resource that just happen to be within a `group`. Where `group.ids` will render the `template` against the `group` itself. As `nodes` and `groups` maintain independent parameter sets, this will return different results.
 
 As the above filters only select the `contexts` to be rendered against they will all return an empty array when used in isolation.
 
@@ -356,7 +356,7 @@ Content-Type: application/vnd.api+json
 }
 ```
 
-The `index` action MAY then combine the `ids` filter with any number of the `context` filters. Examples:
+The `index` action SHOULD then combine the `ids` filter one or more `context` filters:
 
 ```
 GET /files?filter[ids]=<csv-template-ids>&filter[node.ids]=<csv-node-ids>
@@ -386,6 +386,63 @@ Accept: application/vnd.api+json
 Authorization: Bearer <jwt>
 
 HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+{
+  "data": {
+    "type": "files",
+    "id": "<id>",
+    "attributes": {
+      "payload": "<rendered-template-payload>"
+    },
+    "relationships": {
+      "template": {
+        "data": <Template-Resource-Identifier-Object>,
+        "links": ... see spec ...
+      },
+      "context": {
+        "data": <Cluster-Group-Or-Node-Resource-Identifier-Object>,
+        "links": ... see spec ...
+      }
+    },
+    "links": ... see spec ...
+  }, ... see spec ...
+}
+```
+
+### Create
+
+This method "creates" an ephemeral `file` resource. It only lives as long as the request is active. It does not permanently save the `template` or `file`.
+
+Instead it used to render for a single context without having to upload a
+template. Instead the `template` key must contain the string to be rendered.
+
+*NOTE*: As this method only "creates" an ephemeral resource, it is considered a
+read action. As such a `user_token` can be used with this request.
+
+```
+POST /files/:id
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+Authorization: Bearer <jwt>
+{
+  "data": {
+    "type": "files",
+    "attributes": {
+      "template": "<source-template>"
+    },
+    "relationships": {
+      "template": {
+        "data": <Template-Resource-Identifier-Object>
+      },
+      "context": {
+        "data": <Cluster-Group-Or-Node-Resource-Identifier-Object>
+      }
+    },
+    "links": ... see spec ...
+  }, ... see spec ...
+}
+
+HTTP/1.1 201 CREATED
 Content-Type: application/vnd.api+json
 {
   "data": {

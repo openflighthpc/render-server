@@ -29,6 +29,7 @@ remote_cluster: default
 # The following may use relative paths from the install directory
 # or hard coded to be an absolute path
 templates_dir: var/templates
+topology_config: config/topology.yaml
 
 # STATIC DEFAULTS:
 log_level: info

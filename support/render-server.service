@@ -1,0 +1,23 @@
+[Unit]
+Description=Flight Render Server
+Requires=network.target
+Wants=nodeattr-server.service
+
+[Service]
+Type=forking
+User=root
+PIDFile=/opt/flight/opt/render-server/var/puma.pid
+Environment=PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/flight/bin
+EnvironmentFile=/opt/flight/etc/render-server.conf
+WorkingDirectory=/opt/flight/opt/render-server
+ExecStart=/bin/sh -c ' \
+  bin/puma -d -e production \
+    --redirect-append \
+    --redirect-stdout /opt/flight/log/render-server.log \
+    --redirect-stderr /opt/flight/log/render-server.log \
+'
+ExecStop=/opt/flight/opt/render-server/bin/pumactl stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

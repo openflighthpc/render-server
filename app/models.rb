@@ -65,6 +65,7 @@ class Template < BaseHashieDashModel
 
   def self.load_from_id(id)
     new name: id,
+        saved: true,
         payload: File.read(path(name: id))
   rescue Errno::ENOENT
     nil
@@ -72,11 +73,18 @@ class Template < BaseHashieDashModel
 
   DataHash.class_exec do
     property :name
+    property :saved
     property :payload,  default: ''
 
-    validates :name, presence: true, format: {
-      with: /\A[\.\w-]+\z/, message: 'must be alphanumeric and may contain: -_.'
-    }
+    name_opts = { format: {
+      with: /\A[\.\w-]*\z/, message: 'must be alphanumeric and may contain: -_.'
+    }}
+    validates :name, presence: true, if: :saved?, **name_opts
+    validates :name, unless: :saved?, **name_opts
+
+    def saved?
+      saved ? true : false
+    end
 
     def id
       name
@@ -98,23 +106,15 @@ class FileModel
   class Builder
     attr_reader :id, :scope, :name, :template_id
 
-    ID_REGEX = /\A(?<rest>.*)\.(?<last>[^\.]*)\Z/
+    ID_REGEX = /\A(?<template>.*)\.(?<name>[^\.]*)\.(?<scope>[^\.]*)\Z/
 
     def initialize(id)
       @id = id
       if ID_REGEX.match?(id)
         matches = ID_REGEX.match(id)
-        raw_scope = matches.named_captures['last']
-        rest = matches.named_captures['rest']
-        if raw_scope == 'cluster'
-          @scope = 'cluster'
-          @template_id = rest
-        elsif ID_REGEX.match?(rest)
-          matches2 = ID_REGEX.match(rest)
-          @scope = raw_scope
-          @name = matches2.named_captures['last']
-          @template_id = matches2.named_captures['rest']
-        end
+        @scope = matches.named_captures['scope']
+        @name = matches.named_captures['name']
+        @template_id = matches.named_captures['template']
       end
     end
 
@@ -129,7 +129,7 @@ class FileModel
         NodeRecord.find("#{Figaro.env.remote_cluster!}.#{name}").first
       when 'groups'
         GroupRecord.find("#{Figaro.env.remote_cluster!}.#{name}").first
-      when 'cluster'
+      when 'clusters'
         ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
       end
     end
@@ -150,6 +150,10 @@ class FileModel
     @template = template
   end
 
+  def context=(ctx)
+    @context = ctx
+  end
+
   def id
     suffix =  case context
               when NodeRecord
@@ -157,9 +161,9 @@ class FileModel
               when GroupRecord
                 "#{context.name}.groups"
               when ClusterRecord
-                'cluster'
+                'default.clusters'
               else
-                raise 'An unexpected error has occurred'
+                'unknown.unknown'
               end
     "#{template.id}.#{suffix}"
   end

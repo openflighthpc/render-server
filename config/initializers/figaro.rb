@@ -40,12 +40,10 @@ Figaro.load
 ENV['app_root_dir'] = File.expand_path('../..', __dir__)
 root_dir = ENV['app_root_dir']
 
-relative_keys = ['templates_dir']
+relative_keys = ['templates_dir', 'topology_config']
 Figaro.require_keys(*['jwt_shared_secret', 'log_level', *relative_keys].tap do |keys|
                         if ENV['remote_url']
                           keys << 'remote_jwt' << 'remote_cluster'
-                        else
-                          keys << 'topology_config'
                         end
                       end)
 
