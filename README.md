@@ -94,7 +94,7 @@ nodes:
   ...
 ```
 
-### WIP - Integrating with OpenFlightHPC/FlightRunway
+### Integrating with systemd and OpenFlightHPC/FlightRunway
 
 The [provided systemd unit file](support/render-server.service) has been designed to integrate with the `OpenFlightHPC` [flight-runway](https://github.com/openflighthpc/flight-runway) package. The following preconditions must be satisfied for the unit file to work:
 1. `OpenFlightHPC` `flight-runway` must be installed,
