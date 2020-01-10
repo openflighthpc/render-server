@@ -431,9 +431,6 @@ Authorization: Bearer <jwt>
       "template": "<source-template>"
     },
     "relationships": {
-      "template": {
-        "data": <Template-Resource-Identifier-Object>
-      },
       "context": {
         "data": <Cluster-Group-Or-Node-Resource-Identifier-Object>
       }
