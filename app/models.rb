@@ -98,23 +98,15 @@ class FileModel
   class Builder
     attr_reader :id, :scope, :name, :template_id
 
-    ID_REGEX = /\A(?<rest>.*)\.(?<last>[^\.]*)\Z/
+    ID_REGEX = /\A(?<template>.*)\.(?<name>[^\.]*)\.(?<scope>[^\.]*)\Z/
 
     def initialize(id)
       @id = id
       if ID_REGEX.match?(id)
         matches = ID_REGEX.match(id)
-        raw_scope = matches.named_captures['last']
-        rest = matches.named_captures['rest']
-        if raw_scope == 'cluster'
-          @scope = 'cluster'
-          @template_id = rest
-        elsif ID_REGEX.match?(rest)
-          matches2 = ID_REGEX.match(rest)
-          @scope = raw_scope
-          @name = matches2.named_captures['last']
-          @template_id = matches2.named_captures['rest']
-        end
+        @scope = matches.named_captures['scope']
+        @name = matches.named_captures['name']
+        @template_id = matches.named_captures['template']
       end
     end
 
@@ -129,7 +121,7 @@ class FileModel
         NodeRecord.find("#{Figaro.env.remote_cluster!}.#{name}").first
       when 'groups'
         GroupRecord.find("#{Figaro.env.remote_cluster!}.#{name}").first
-      when 'cluster'
+      when 'clusters'
         ClusterRecord.find(".#{Figaro.env.remote_cluster!}").first
       end
     end
@@ -157,7 +149,7 @@ class FileModel
               when GroupRecord
                 "#{context.name}.groups"
               when ClusterRecord
-                'cluster'
+                'default.clusters'
               else
                 raise 'An unexpected error has occurred'
               end

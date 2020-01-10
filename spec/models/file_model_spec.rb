@@ -76,7 +76,7 @@ RSpec.describe FileModel::Builder do
       let(:id) do
         suffix = case resource
                  when ClusterRecord
-                   'cluster'
+                   'default.clusters'
                  when GroupRecord
                    "#{resource.name}.groups"
                  when NodeRecord

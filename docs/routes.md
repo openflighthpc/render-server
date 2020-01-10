@@ -278,7 +278,7 @@ The `file` ID must encode the IDs for the `context` and `template` and may take 
 
 ```
 # Cluster Context
-<template-name>.cluster
+<template-name>.default.clusters
 
 # Group Context
 <template-name>.<group-name>.groups
