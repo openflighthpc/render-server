@@ -54,7 +54,7 @@ task require: :require_bundler do
   require 'app/records'
   require 'app/models'
   require 'app/proxies'
-  # require 'app/token'
+  require 'app/token'
   require 'app/serializers'
   require 'app'
 end
@@ -64,13 +64,16 @@ task console: :require do
   binding.pry
 end
 
-# task 'token:admin' => :require do
-#   puts Token.new(admin: true).generate_jwt
-# end
+task 'token:admin', [:days] => :require do |task, args|
+  token = Token.new(admin: true)
+               .tap { |t| t.exp_days = args[:days].to_i if args[:days] }
+  puts token.generate_jwt
+end
 
-# task 'token:user' => :require do
-#   puts Token.new.generate_jwt
-# end
+task 'token:user', [:days] => :require do |task, args|
+  token = Token.new.tap { |t| t.exp_days = args[:days].to_i if args[:days] }
+  puts token.generate_jwt
+end
 
 # Creates the demo cluster used by the spec
 task :'cluster:setup' => :require do

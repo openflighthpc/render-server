@@ -125,13 +125,13 @@ RSpec.configure do |c|
   def admin_headers
     header 'Content-Type', 'application/vnd.api+json'
     header 'Accept', 'application/vnd.api+json'
-    # header 'Authorization', "Bearer #{Token.new(admin: true).generate_jwt}"
+    header 'Authorization', "Bearer #{Token.new(admin: true).generate_jwt}"
   end
 
   def user_headers
     header 'Content-Type', 'application/vnd.api+json'
     header 'Accept', 'application/vnd.api+json'
-    # header 'Authorization', "Bearer #{Token.new.generate_jwt}"
+    header 'Authorization', "Bearer #{Token.new.generate_jwt}"
   end
 
   def parse_last_request_body
