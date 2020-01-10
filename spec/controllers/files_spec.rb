@@ -47,16 +47,6 @@ RSpec.describe '/files' do
 
   let(:demo_cluster) { DemoCluster.new(ids: true) }
 
-  describe 'Show#GET' do
-    it 'can get a template for a node' do
-      template.save
-      id = "#{template.id}.#{node.name}.nodes"
-      admin_headers
-      get "/files/#{id}"
-      expect(last_response).to be_successful
-    end
-  end
-
   describe 'Index#GET' do
     context 'with a single  filter' do
       {
@@ -249,6 +239,65 @@ RSpec.describe '/files' do
           expect(parse_last_response_body.data).to be_empty
         end
       end
+    end
+  end
+
+  describe 'Show#GET' do
+    it 'can get a template for a node' do
+      template.save
+      id = "#{template.id}.#{node.name}.nodes"
+      admin_headers
+      get "/files/#{id}"
+      expect(last_response).to be_successful
+    end
+  end
+
+  describe 'Create#POST' do
+    let(:cluster_name) { demo_cluster.cluster.name }
+    let(:file) { FileModel.new(context_model, template) }
+    let(:rendered) do
+      user_headers
+      opts = {
+        include_id: false,
+        attributes: { template: template.payload },
+        relationships: {
+          context: context_model.tap do |ctx|
+            ctx.id = (ctx.is_a?(ClusterRecord) ? 'default' : ctx.name)
+          end
+        }
+      }
+      post "/files", build_payload(file, **opts).to_json
+      parse_last_response_body.data.attributes.payload
+    end
+
+    shared_examples 'can render' do
+      it 'can render a temporary template' do
+        expect(rendered).to eq(file.payload)
+      end
+    end
+
+    context 'with a cluster context' do
+      let(:context_model) do
+        ClusterRecord.find(".#{cluster_name}").first
+      end
+      include_examples 'can render'
+    end
+
+    context 'with a group context' do
+      let(:context_model) do
+        GroupRecord.find("#{cluster_name}.#{demo_cluster.groups.first.name}")
+                   .first
+      end
+      include_examples 'can render'
+    end
+
+    context 'with a node context' do
+      let(:context_model) do
+        NodeRecord.find("#{cluster_name}.#{demo_cluster.nodes.first.name}")
+                  .first
+      end
+
+      include_examples 'can render'
     end
   end
 end

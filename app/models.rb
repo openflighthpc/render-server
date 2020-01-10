@@ -150,6 +150,10 @@ class FileModel
     @template = template
   end
 
+  def context=(ctx)
+    @context = ctx
+  end
+
   def id
     suffix =  case context
               when NodeRecord
@@ -159,7 +163,7 @@ class FileModel
               when ClusterRecord
                 'default.clusters'
               else
-                raise 'An unexpected error has occurred'
+                'unknown.unknown'
               end
     "#{template.id}.#{suffix}"
   end

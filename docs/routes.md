@@ -409,3 +409,60 @@ Content-Type: application/vnd.api+json
 }
 ```
 
+### Create
+
+This method "creates" an ephemeral `file` resource. It only lives as long as the request is active. It does not permanently save the `template` or `file`.
+
+Instead it used to render for a single context without having to upload a
+template. Instead the `template` key must contain the string to be rendered.
+
+*NOTE*: As this method only "creates" an ephemeral resource, it is considered a
+read action. As such a `user_token` can be used with this request.
+
+```
+POST /files/:id
+Content-Type: application/vnd.api+json
+Accept: application/vnd.api+json
+Authorization: Bearer <jwt>
+{
+  "data": {
+    "type": "files",
+    "attributes": {
+      "template": "<source-template>"
+    },
+    "relationships": {
+      "template": {
+        "data": <Template-Resource-Identifier-Object>
+      },
+      "context": {
+        "data": <Cluster-Group-Or-Node-Resource-Identifier-Object>
+      }
+    },
+    "links": ... see spec ...
+  }, ... see spec ...
+}
+
+HTTP/1.1 201 CREATED
+Content-Type: application/vnd.api+json
+{
+  "data": {
+    "type": "files",
+    "id": "<id>",
+    "attributes": {
+      "payload": "<rendered-template-payload>"
+    },
+    "relationships": {
+      "template": {
+        "data": <Template-Resource-Identifier-Object>,
+        "links": ... see spec ...
+      },
+      "context": {
+        "data": <Cluster-Group-Or-Node-Resource-Identifier-Object>,
+        "links": ... see spec ...
+      }
+    },
+    "links": ... see spec ...
+  }, ... see spec ...
+}
+```
+
