@@ -65,6 +65,7 @@ class Template < BaseHashieDashModel
 
   def self.load_from_id(id)
     new name: id,
+        saved: true,
         payload: File.read(path(name: id))
   rescue Errno::ENOENT
     nil
@@ -72,6 +73,7 @@ class Template < BaseHashieDashModel
 
   DataHash.class_exec do
     property :name
+    property :saved
     property :payload,  default: ''
 
     validates :name, presence: true, format: {

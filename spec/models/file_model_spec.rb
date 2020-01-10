@@ -59,6 +59,10 @@ RSpec.describe FileModel::Builder do
 
     describe '#template' do
       it { expect(subject.template.path).to eq(template.path) }
+      it { expect(subject.template.saved).to be(true) }
+    end
+
+    describe '#saved' do
     end
 
     describe '#build' do
