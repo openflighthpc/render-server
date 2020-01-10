@@ -146,8 +146,7 @@ rake token:admin[1] # Valid for 1 day   [Smallest]
 
 # Generate a user token
 rake token:user       # Valid for 30 days [Default]
-rake token:user[360]  # Valid for 60 days
-
+rake token:user[360]  # Valid for 360 days
 ```
 
 # Contributing
