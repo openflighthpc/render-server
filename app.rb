@@ -305,3 +305,5 @@ resource :files, pkre: /[.\w-]+/ do
   end
 end
 
+freeze_jsonapi
+
