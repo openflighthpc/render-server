@@ -4,9 +4,6 @@
 
 Shared micro-service that renders files for a cluster, groups, and nodes
 
-## Overview
-
-
 ## Installation
 
 ### Preconditions
@@ -64,8 +61,7 @@ export remote_cluster=<upstream-cluster-name | default>
 
 #### Standalone Mode
 
-Standalone mode is activated when `remote_url` has not been set. The `cluster` and
-`groups` functionality is disabled when in standalone mode. Any requests for clusters/groups will result in a `Not Found` error, or will be ignored (see [api specification](docs/routes.md) for further details).
+Standalone mode is activated by default as `remote_url` has not been set. The `cluster` and `groups` functionality is disabled when in standalone mode. Any requests for clusters/groups will result in a `Not Found` error, or will be ignored (see [api specification](docs/routes.md) for further details).
 
 Instead the `nodes` list will be loaded from the "topology". The path to the `topology_config` is configurable as either an absolute or relative path to the install directory ([see for further details](config/application.yaml.reference)). By default it will be loaded from: `config/topology.yaml`.
 

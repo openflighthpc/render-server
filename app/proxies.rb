@@ -111,6 +111,9 @@ class Topology < Hashie::Trash
   end
 end
 
+# NOTE: Ensure the topology file exists in standalone mode
+Topology::Cache.instance unless Figaro.env.remote_url
+
 module NodeProxy
   include HasProxies
 

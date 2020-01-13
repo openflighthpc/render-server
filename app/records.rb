@@ -30,8 +30,12 @@
 require 'json_api_client'
 
 class Record < JsonApiClient::Resource
-  self.site = Figaro.env.remote_url!
-  self.connection.faraday.authorization :Bearer, (Figaro.env.remote_jwt! || '')
+  # NOTE: `remote_url` may not be set due to standalone mode. However Figaro
+  # will ensure it is set in upstream mode.
+  if Figaro.env.remote_url
+    self.site = Figaro.env.remote_url
+    self.connection.faraday.authorization :Bearer, (Figaro.env.remote_jwt! || '')
+  end
   connection.use Faraday::Response::Logger, DEFAULT_LOGGER, { bodies: true } do |logger|
     logger.filter(/(Authorization:)(.*)/, '\1 [REDACTED]')
   end
