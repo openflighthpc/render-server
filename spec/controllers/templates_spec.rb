@@ -70,11 +70,13 @@ RSpec.describe '/templates' do
 
   describe 'Create#POST' do
     let(:template) { Template.new name: 'test_name-1', payload: 'some-content' }
+    let(:payload) do
+      build_payload template,
+                    attributes: { name: template.name, payload: template.payload },
+                    include_id: false
+    end
 
     it 'creates a new template' do
-      payload = build_payload template,
-                              attributes: { name: template.name, payload: template.payload },
-                              include_id: false
       admin_headers
       post '/templates', payload.to_json
       expect(File.read(template.path)).to eq(template.payload)
@@ -89,6 +91,13 @@ RSpec.describe '/templates' do
       admin_headers
       post '/templates', payload.to_json
       expect(last_response).to be_unprocessable
+    end
+
+    it 'errors if the template already exists' do
+      template.save
+      admin_headers
+      post '/templates', payload.to_json
+      expect(last_response.status).to be(409)
     end
   end
 

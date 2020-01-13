@@ -4,9 +4,6 @@
 
 Shared micro-service that renders files for a cluster, groups, and nodes
 
-## Overview
-
-
 ## Installation
 
 ### Preconditions

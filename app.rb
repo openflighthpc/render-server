@@ -36,7 +36,10 @@ register Sinja
 
 BEARER_REGEX = /\ABearer\s(.*)\Z/
 
+class TemplateConflictError < StandardError; end
+
 configure_jsonapi do |c|
+  c.conflict_exceptions << TemplateConflictError
   c.validation_exceptions << ActiveModel::ValidationError
 
   c.validation_formatter = ->(e) do
@@ -180,7 +183,9 @@ resource :templates, pkre: /[\.\w-]+/ do
   show
 
   create do |attr|
-    template = Template.new(**attr).tap(&:save)
+    template = Template.new(**attr)
+    raise TemplateConflictError if File.exists? template.path
+    template.tap(&:save)
     next template.id, template
   end
 
