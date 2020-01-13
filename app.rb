@@ -184,7 +184,9 @@ resource :templates, pkre: /[\.\w-]+/ do
 
   create do |attr|
     template = Template.new(**attr)
-    raise TemplateConflictError if File.exists? template.path
+    raise TemplateConflictError, <<~ERROR if File.exists? template.path
+      The template '#{template.name}' already exists
+    ERROR
     template.tap(&:save)
     next template.id, template
   end
