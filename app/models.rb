@@ -33,6 +33,7 @@
 class BaseHashieDashModel
   def self.inherited(klass)
     data_class = Class.new(Hashie::Dash) do
+      include Hashie::Extensions::IgnoreUndeclared
       include ActiveModel::Validations
 
       def self.method_added(m)
